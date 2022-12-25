@@ -24,7 +24,7 @@ class Map:
     
     def get_regions__of_mountains(self):
         '''
-            For hint 14th
+            For the 14th hint
         '''
         return
     
