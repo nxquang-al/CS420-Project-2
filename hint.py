@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 class HintManager:
     def __init__(self, data):
@@ -265,22 +266,74 @@ class HintManager:
         '''
         A column and/or a row that contain the treasure (rare).
         '''
-        return 
+        width, height = self.map.get_map_shape()
+        choice = random.choice([0,1,2], p=[0.45,0.45,0.1], size=1)[0]
+        col, row = None, None
+        log = ''
+        truth = False
+        if choice == 0:
+            # Column
+            col = random.randint(0,width)
+            truth = self.map.check_column(col)
+            log = 'Column {} contains the treasure'.format(col)
+        elif choice ==1:
+            # Row
+            row = random.randint(0, height)
+            truth = self.map.check_row(row)
+            log = 'Row {} contains the treasure'.format(row)
+        elif choice == 2:
+            # Both
+            col = random.randint(0,width)
+            row = random.randint(0, height)
+            truth = self.map.check_column(col) and self.map.check_row(row)
+            log = 'Column {} and row {} contain the treasure'.format(col, row)       
+        return 7, truth, log, (col, row)
+
     def gen_8th_type(self):
         '''
         A column and/or a row that do not contain the treasure.
         '''
-        return
+        width, height = self.map.get_map_shape()
+        choice = random.choice([0,1,2], p=[0.45,0.45,0.1], size=1)[0]
+        col = row = None
+        truth = False
+        if choice == 0:
+            # Column
+            c = random.randint(0,width)
+            column = np.expand_dims(np.arange(0,height), axis=1)
+            column = np.pad(column, (1,0), 'constant', constant_values=c)
+            truth = not self.map.check_column(c)
+        elif choice ==1:
+            # Row
+            r = random.randint(0, height)
+            row = np.expand_dims(np.arange(0,width), axis=1)
+            row = np.pad(row, (0,1), 'constant', constant_values=r)
+            truth = not self.map.check_row(r)
+        elif choice == 2:
+            # Both
+            c = random.randint(0,width)
+            column = np.expand_dims(np.arange(0,height), axis=1)
+            column = np.pad(column, (1,0), 'constant', constant_values=c)
+            r = random.randint(0, height)
+            row = np.expand_dims(np.arange(0,width), axis=1)
+            row = np.pad(row, (0,1), 'constant', constant_values=r)
+            truth = not self.map.check_column(c) and not self.map.check_row(r)
+        return 8, truth, np.concatenate((column, row), axis=0)
+
     def gen_9th_type(self):
         '''
         2 regions that the treasure is somewhere in their boundary.
         '''
+
         return 
     def gen_10th_type(self):
         '''
         The treasure is somewhere in a boundary of 2 regions
         '''
-        return 
+        truth = self.map.check_on_boundary()
+        log = 'The treasure is somewhere in a boundary of 2 regions'
+        return 10, truth, log
+        
     def gen_11th_type(self):
         '''
         The treasure is somewhere in an area bounded by 2-3 tiles from sea.
@@ -290,20 +343,64 @@ class HintManager:
         '''
         A half of the map without treasure (rare).
         '''
-        return 
-    def gen_13th_type(self):
+        width, height = self.map.get_map_shape()
+        choice = random.randint(0,3) # 0: left, 1: right, 2: top, 3: right
+        if choice == 0:     #left half
+            top_left = (0,0)
+            bot_right = (width // 2, height)
+        elif choice == 1:   #right half
+            top_left = (width // 2, 0)
+            bot_right = (width, height)
+        elif choice == 3:   #top half
+            top_left = (0,0)
+            bot_right = (width, height // 2)
+        else:               #bottom half
+            top_left = (0, height // 2)
+            bot_right = (width, height)
+        
+        truth = self.map.check_rectangle_region(top_left, bot_right)
+        return 12, truth, np.array([top_left, bot_right])
+
+    def gen_13th_type(self, prison_pos):
         '''
         From the center of the map/from the prison that he's staying, he tells
         you a direction that has the treasure (W, E, N, S or SE, SW, NE, NW)
         (The shape of area when the hints are either W, E, N or S is triangle).
         '''
+        choice = random.randint(0,7)
+        if choice == 0:
+            # East
+            truth = self.map.check_direction(prison_pos, direction='E')
+        elif choice == 1:
+            # West
+            truth = self.map.check_direction(prison_pos, direction='W')
+        elif choice == 2:
+            # North
+            truth = self.map.check_direction(prison_pos, direction='N')
+        elif choice == 3:
+            # South
+            truth = self.map.check_direction(prison_pos, direction='S')
+        elif choice == 4:
+            # South-East
+            truth = self.map.check_direction(prison_pos, direction='SE')
+        elif choice == 5:
+            # South-West
+            truth = self.map.check_direction(prison_pos, direction='SW')
+        elif choice == 6:
+            # North-East
+            truth = self.map.check_direction(prison_pos, direction='NE')
+        elif choice == 7:
+            # North-West
+            truth = self.map.check_direction(prison_pos, direction='NW')
         return 
+ 
     def gen_14th_type(self):
         '''
         2 squares that are different in size, the small one is placed inside the
         bigger one, the treasure is somewhere inside the gap between 2
         squares. (rare)
         '''
+
         return 
     def gen_15th_type(self):
         '''
