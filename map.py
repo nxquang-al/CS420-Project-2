@@ -17,11 +17,11 @@ class Map:
         self.prisons =  None                        # Numpy array of prisons array([p1, p2, p3,...])
 
         self.num_regions = None
-        self.adjacent_list = self.get_adjacent()    # List of numpy array of adjacent regions
+        self.adjacent_list = self.get_neighbors()    # List of numpy array of adjacent regions
         self.region_boundaries = []                 # List of numpy array [bound_region_1, bound_region_2,...]
 
         for i in range(self.num_regions):
-            self.region_boundaries.append(self.get_region_boundary(i))
+            self.region_boundaries.append(self.get_region_boundary(region_idx=i))
     
     def get_map_shape(self):
         return self.width, self.height
@@ -35,7 +35,7 @@ class Map:
         '''
         return
 
-    def get_adjacent(self):
+    def get_neighbors(self):
         '''
         This function finds adjacent regions of each region
         Return: list of N items, N is the number of regions
@@ -77,11 +77,45 @@ class Map:
         boundary = np.vstack((x,y)).T
         return boundary #array[[x0,y0],[x1,y1],...]
 
+    def is_adjacent(self, rid_1, rid_2):
+        '''
+        Given 2 regions, check if region_1 is adjacent to region_2
+        '''
+        return (rid_2 in self.adjacent_list[rid_1])
+
+    def get_two_regions_boundary(self, rid_1, rid_2):
+        '''
+        Given 2 regions index, find their boudary tiles
+        '''
+        # check if 2 regions are adjacent
+        if rid_2 not in self.adjacent_list[rid_1]:
+            return None
+
+        r1_boundary = self.get_region_boundary(rid_1)
+        b1 = set()
+        b2 = set()
+        for tile in r1_boundary:
+            col, row = tile
+            if col+1 < self.width and self.map[col+1, row] == rid_2:
+                b1.add((col, row))
+                b2.add((col+1, row))
+            if col-1 >= 0 and self.map[col-1, row] == rid_2:
+                b1.add((col, row))
+                b2.add((col-1, row))
+            if row+1 < self.height and self.map[col, row+1] == rid_2:
+                b1.add((col, row))
+                b2.add((col, row+1))
+            if row-1 >= 0 and self.map[col, row-1] == rid_2:
+                b1.add((col, row))
+                b2.add((col, row-1))
+
+        return np.array(list(b1)), np.array(list(b2))
+
     def isMovable(self,col,row):
         '''
             Check if this cell is moveable (not mountain, sea)
         '''
-        return
+        return self.map[col, row] != 0 and ([col, row] not in self.mountains)
 
     def check_column(self, col_idx):
         '''
@@ -155,13 +189,6 @@ class Map:
         if Ty+1 < self.height and self.map[Tx, Ty+1] != T_region:
             return True
         return False
-
-   
-    def check_adjancent_regions(self, rid_1, rid_2):
-        '''
-        Given 2 regions, check if they are adjacent
-        '''
-        return
 
     
     
