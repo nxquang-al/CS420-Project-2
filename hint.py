@@ -2,8 +2,8 @@ import numpy as np
 import random
 
 class HintManager:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, map):
+        self.map = map
         self.agent_pos = None
         self.pirate_pos = None
         return
@@ -109,158 +109,111 @@ class HintManager:
         #random the number of random tiles 1 - 12
         num_tiles = np.random.randint(1, 13)
         
-        truth_val = True
-        
-        #create an numpy array of num_tiles tuples (0, 0)
-        # example: [(-1,-1),(-1,-1),(-1,-1),...] 
-        list_tiles = np.full(num_tiles, (-1, -1), (np.int64, (2,)))
-
-        width, height = self.data.width, self.data.height
+        #create an numpy array of num_tiles arrays [0, 0]
+        # example: [[-1,-1],[-1,-1],[-1,-1],...] 
+        array_of_tiles = np.full(num_tiles, [-1, -1], (np.int64, (2,)))
         
         for i in range(num_tiles):
             while True:
-                col = np.random.randint(width)
-                row = np.random.randint(height)
-                if (col, row) not in list_tiles: #random until we get a tile that has not been selected
+                col = np.random.randint(self.map.width)
+                row = np.random.randint(self.map.height)
+                if [col, row] not in array_of_tiles: #random until we get a tile that has not been selected
                     break
 
-            list_tiles[i] = (col, row)           #do this instead of append because it is faster      
-            
-        if self.data.treasure in list_tiles:
-            truth_val = False
+            array_of_tiles[i] = (col, row)           #do this instead of append because it is faster      
 
-        return 1, truth_val, list_tiles
+        log = "A list of tiles [{}] doesn't contain the treasure".format(self.map.convert_to_string(array_of_tiles))
+
+        truth = True
+        if self.map.treasure_pos in array_of_tiles:
+            truth = False
+
+        return 1, log, truth, array_of_tiles
 
     def gen_2nd_type(self):
         '''
         2-5 regions that 1 of them has the treasure.
         '''
-        #random the number of regions from 2-5
         num_regions = np.random.randint(2, 6)
+
+        list_regions = np.random.choice(np.arange(1, self.map.num_regions), (num_regions,), replace=False)
+
+        log = "One of the regions {} has the treasure".format(self.map.convert_to_string(list_regions))
         
-        truth_val = True
-
-        #choose randomly num_regions regions 
-        list_regions = np.random.choice(np.arange(1, self.data.num_regions), (num_regions,), replace=False)
-
-        if self.data.map[self.data.treasure] not in list_regions:
-            truth_val = False
-
-        list_tiles = None
-        for region in list_regions:      
-            if list_tiles is None:
-                list_tiles = np.asarray(np.where(self.data.map == region)).T
-            else:
-                list_tiles = np.concatenate((list_tiles, np.asarray(np.where(self.data.map == region)).T), axis=0)
+        truth, array_of_tiles = self.map.check_region(list_regions)
         
-        print(list_regions)
-        return 2, truth_val, list_tiles  
-    
+        return 2, log, truth, list_regions
+
     def gen_3rd_type(self):
         '''
         1-3 regions that do not contain the treasure.
         '''
         num_regions = np.random.randint(1, 4)
+
+        list_regions = np.random.choice(np.arange(1, self.map.num_regions), (num_regions,), replace=False)
+
+        log = "Regions {} do not contain the treasure".format(self.map.convert_to_string(list_regions))
         
-        truth_val = True
-
-        list_regions = np.random.choice(np.arange(1, self.data.num_regions), (num_regions,), replace=False)
-
-        if self.data.map[self.data.treasure] in list_regions:
-            truth_val = False
-
-        list_tiles = None
-        for region in list_regions:      
-            if list_tiles is None:
-                list_tiles = np.asarray(np.where(self.data.map == region)).T
-            else:
-                list_tiles = np.concatenate((list_tiles, np.asarray(np.where(self.data.map == region)).T), axis=0)
+        truth, array_of_tiles = self.map.check_region(list_regions)
         
-        print(list_regions)
-        return 3, truth_val, list_tiles 
- 
+        return 3, log, not truth, list_regions
+
     def gen_4th_type(self):
         '''
         A large rectangle area that has the treasure.
         '''
-        map_area = self.data.width * self.data.height
-        selected_area = 0
-        truth_val = True
+        map_area = self.map.width * self.map.height
+        rectangle = None
 
         while True:
-            col = np.sort(np.random.choice(np.arange(self.data.width), (2,), replace=False)) #choose 2 coordinates x from 0 - width and sort ascending
-            row = np.flip(np.sort(np.random.choice(np.arange(self.data.height), (2,), replace=False))) #choose 2 coordinates y from 0 - height and sort descending
+            col = np.sort(np.random.choice(np.arange(self.map.width), (2,), replace=False)) #choose 2 coordinates x from 0 - width and sort ascending
+            row = np.flip(np.sort(np.random.choice(np.arange(self.map.height), (2,), replace=False))) #choose 2 coordinates y from 0 - height and sort descending
             
             selected_area = (col[1] - col[0]) * (row[0] - row[1]) 
             
             if selected_area >= 0.3 * map_area and selected_area < 0.6 * map_area: #large rectangle area is an area that must be as big as 30% - 60% total area of the map
-                rectangle = np.concatenate((col, row), axis=0) #this array has 4 elements representing for rectangle's coordinates [top_left_x, bottom_right_x, top_left_y, bottom_right_y]
+                rectangle = np.array([col[0], row[0], col[1], row[1]]) #this array has 4 elements representing for rectangle's coordinates [top_left_x, bottom_right_x, top_left_y, bottom_right_y]
                 break
         
-        #if the treasure is outside the rectangle, this hint is false
-        if self.data.treasure[0] < rectangle[0] or self.data.treasure[0] > rectangle[1] or self.data.treasure[1] > rectangle[2] or self.data.treasure[1] < rectangle[3]:
-            truth_val = False
+        log = "A large rectangle area has the treasure. Top-Left-Bottom-Right = [{}]".format(self.map.convert_to_string(rectangle))
 
-        #get the list of coordinates of titles which are inside the rectangle
-        list_tiles = np.stack(
-                        np.meshgrid(
-                            [col for col in range(rectangle[0], rectangle[1] + 1)], 
-                            [row for row in range(rectangle[3], rectangle[2] + 1)]
-                        ), 
-                        -1
-                    ).reshape(-1, 2) 
+        truth, array_of_tiles = self.map.check_rectangle(rectangle)
         
-        print(rectangle)
-        return 4, truth_val, list_tiles
+        return 4, log, truth, array_of_tiles
 
     def gen_5th_type(self):
         '''
         A small rectangle area that doesn't has the treasure.
         '''
-        map_area = self.data.width * self.data.height
-        selected_area = 0
-        truth_val = True
+        map_area = self.map.width * self.map.height
+        rectangle = None
 
         while True:
-            col = np.sort(np.random.choice(np.arange(self.data.width), (2,), replace=False)) #choose 2 coordinates x from 0 - width and sort ascending
-            row = np.flip(np.sort(np.random.choice(np.arange(self.data.height), (2,), replace=False))) #choose 2 coordinates y from 0 - height and sort descending
+            col = np.sort(np.random.choice(np.arange(self.map.width), (2,), replace=False)) #choose 2 coordinates x from 0 - width and sort ascending
+            row = np.flip(np.sort(np.random.choice(np.arange(self.map.height), (2,), replace=False))) #choose 2 coordinates y from 0 - height and sort descending
             
             selected_area = (col[1] - col[0]) * (row[0] - row[1]) 
             
-            if selected_area >= 0.1 * map_area and selected_area < 0.3 * map_area: #small rectangle area is an area that must be as big as 10% - 30% total area of the map
-                rectangle = np.concatenate((col, row), axis=0) #this array has 4 elements representing for rectangle's coordinates [top_left_x, bottom_right_x, top_left_y, bottom_right_y]
+            if selected_area >= 0.1 * map_area and selected_area < 0.3 * map_area: #large rectangle area is an area that must be as big as 30% - 60% total area of the map
+                rectangle = np.array([col[0], row[0], col[1], row[1]]) #this array has 4 elements representing for rectangle's coordinates [top_left_x, bottom_right_x, top_left_y, bottom_right_y]
                 break
         
-        #if the treasure is outside the rectangle, this hint is false
-        if not (self.data.treasure[0] < rectangle[0] or self.data.treasure[0] > rectangle[1] or self.data.treasure[1] > rectangle[2] or self.data.treasure[1] < rectangle[3]):
-            truth_val = False
+        log = "A small rectangle area doesn't has the treasure. Top-Left-Bottom-Right = [{}]".format(self.map.convert_to_string(rectangle))
 
-        #get the list of coordinates of titles which are inside the rectangle
-        list_tiles = np.stack(
-                        np.meshgrid(
-                            [col for col in range(rectangle[0], rectangle[1] + 1)], 
-                            [row for row in range(rectangle[3], rectangle[2] + 1)]
-                        ), 
-                        -1
-                    ).reshape(-1, 2) 
+        truth, array_of_tiles = self.map.check_rectangle(rectangle)
         
-        print(rectangle)
-        return 5, truth_val, list_tiles 
+        return 5, log, not truth, array_of_tiles
 
     def gen_6th_type(self):
         '''
         He tells you that you are the nearest person to the treasure (between
         you and the prison he is staying).
         '''
-        truth_val = True
+        log = "You are the nearest person to the treasure"
         
-        agent_distance = sum(abs(self.agent_pos[0] - self.data.treasure[0]), abs(self.agent_pos[1] - self.data.treasure[1]))
-        pirate_distance = sum(abs(self.pirate_pos[0] - self.data.treasure[0]), abs(self.pirate_pos[1] - self.data.treasure[1]))
+        truth = self.map.check_distance(self.agent_pos, self.pirate_pos)
         
-        if (agent_distance > pirate_distance):
-            truth_val = False
-
-        return 6, truth_val
+        return 6, log, truth
         
     def gen_7th_type(self):
         '''
@@ -400,11 +353,39 @@ class HintManager:
         bigger one, the treasure is somewhere inside the gap between 2
         squares. (rare)
         '''
+        map_area = self.map.width * self.map.height
+        big_square = None
+        small_square = None
 
-        return 
+        while True:
+            #choose 2 top_left and bottom_left y coordinates for each square from 0 - width and sort ascendingly
+            #the higgest and lowest y is belong to the the bigger square and the 2 left is smaller one's
+            col = np.sort(np.random.choice(np.arange(self.map.width), (4,)))
+
+            #choose 2 top_left and bottom_left x coordinates for each square from 0 - height and sort descendingly
+            #the higgest and lowest x is belong to the the bigger square and the 2 left is smaller one's
+            row = np.flip(np.sort(np.random.choice(np.arange(self.map.height), (4,))))
+            
+            small_area = (col[2] - col[1]) * (row[1] - row[2])
+
+            #small square's area must be as big as 10% - 30% total area of the map
+            if small_area >= 0.1 * map_area and small_area < 0.3 * map_area: 
+                big_square = np.array([col[0], row[0], col[3], row[3]], dtype=np.int64)
+                small_square = np.array([col[1], row[1], col[2], row[2]], dtype=np.int64)
+                break
+
+        log = "The treasure is somewhere in the gap between 2 squares: S1 = [{}], S2 = [{}]".format(self.map.convert_to_string(big_square), self.map.convert_to_string(small_square))
+    
+        truth, array_of_tiles = self.map.check_square_gap(big_square, small_square)
+
+        return 14, log, truth, big_square, small_square
+    
     def gen_15th_type(self):
         '''
         The treasure is in a region that has mountain.
         '''
-        return 
+        list_mountain_region = self.map.get_mountain_region()
+        log = "The treasure is in one of the regions {} which have mountain".format(list_mountain_region)
+        truth, array_of_tiles = self.map.check_region(list_mountain_region)
+        return 15, log, truth, list_mountain_region
     

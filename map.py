@@ -190,6 +190,78 @@ class Map:
             return True
         return False
 
+    def check_square_gap(self, big_square, small_square):
+        #get the coordinates of tiles which has free y and be bounded by x (titles that are on top and bottom of gap created by 2 squares)
+        bounded_col_tiles = np.stack(
+                                np.meshgrid(
+                                    [col for col in range(big_square[0] + 1, small_square[0])] + [col for col in range(small_square[2] + 1, big_square[2])], 
+                                    [row for row in range(small_square[3], small_square[1] + 1)]
+                                ), 
+                                -1
+                            ).reshape(-1, 2)
+
+        #get the coordinates of tiles which has free x and be bounded by y (titles that are on 2 sides of gap created by 2 squares)
+        #.append([row for row in range(row[1] + 1, row[0])]
+        bounded_row_tiles = np.stack(
+                                np.meshgrid(
+                                    [col for col in range(big_square[0] + 1, big_square[2])], 
+                                    [row for row in range(big_square[3] + 1, small_square[3])] + [row for row in range(small_square[1] + 1, big_square[1])]
+                                ), 
+                                -1
+                            ).reshape(-1, 2)
+        
+        square_gap_tiles = np.concatenate((bounded_col_tiles, bounded_row_tiles), axis=0)
+
+        hasTreasure = False
+        if self.treasure_pos in square_gap_tiles:
+            hasTreasure = True
+
+        return hasTreasure, square_gap_tiles
     
-    
-    
+    def get_mountain_region(self):
+        #get the list of regions which have mountain 
+        return np.unique(self.map[self.mountains[:, 0], self.mountains[:, 1]])   
+
+    def check_region(self, list_regions):
+        region_tiles = None
+        for region in list_regions:      
+            if region_tiles is None:
+                region_tiles = np.asarray(np.where(self.map == region)).T
+            else:
+                region_tiles = np.concatenate((region_tiles, np.asarray(np.where(self.map == region)).T), axis=0)
+        
+        hasTreasure = False
+        if self.map[tuple(self.treasure_pos)] in list_regions:
+            hasTreasure = True
+        
+        return hasTreasure, region_tiles
+
+    def check_rectangle(self, rectangle):
+        #get the list of coordinates of titles which are inside the rectangle
+        rectangle_tiles = np.stack(
+                            np.meshgrid(
+                                [col for col in range(rectangle[0] + 1, rectangle[2])], 
+                                [row for row in range(rectangle[3] + 1, rectangle[1])]
+                            ), 
+                            -1
+                        ).reshape(-1, 2) 
+        
+        hasTreasure = True
+        #if the treasure is outside the rectangle, this hint is false
+        if self.treasure_pos[0] <= rectangle[0] or self.treasure_pos[0] >= rectangle[2] or self.treasure_pos[1] >= rectangle[1] or self.treasure_pos[1] <= rectangle[3]:
+            hasTreasure = False
+
+        return hasTreasure, rectangle_tiles
+
+    def convert_to_string(self, list):
+        return ', '.join(map(str, list))
+
+    def check_distance(self, agent_pos, pirate_pos):
+        agent_distance = sum(abs(agent_pos[0] - self.treasure_pos[0]), abs(agent_pos[1] - self.treasure_pos[1]))
+        pirate_distance = sum(abs(pirate_pos[0] - self.treasure_pos[0]), abs(pirate_pos[1] - self.treasure_pos[1]))
+        
+        isNearer = True
+        if (agent_distance > pirate_distance):
+            isNearer = False
+        
+        return isNearer
