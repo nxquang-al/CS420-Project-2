@@ -536,3 +536,62 @@ class Map:
             isNearer = False
         
         return isNearer
+
+
+N = 32
+map = Map(N,N)
+
+def parse_grid(grid_string):
+    # Split string into rows
+    rows = grid_string.strip().split("\n")
+
+    # Split rows into cells
+    cells = [row.split() for row in rows]
+
+   # Convert cells to strings
+    return [[cell[1] if len(cell) == 2 else cell for cell in row] for row in cells]
+
+def visualize_grid(grid, n):
+    # Map values to colors
+    colors = {
+        "T": "\033[41m",  # highlighted red 
+        "M": "\033[45m",  # highlighted purple
+        "P": "\033[42m",  # highlighted green
+        "0": "\033[34m",  # blue
+        "1": "\033[33m",  # yellow
+        "2": "\033[31m",  # red
+        "3": "\033[37m",  # white
+        "4": "\033[32m",  # green
+        "5": "\033[28m",  # gray
+        "6": "\033[38;5;208m",  # orange
+        "7": "\033[36m",  # cyan
+    }
+
+   # Initialize visualization as a list of empty strings
+    vis = ["" for i in range(n)]
+
+    # Iterate over rows and columns
+    for i in range(n):
+        for j in range(n):
+            # Get color for value
+            color = colors.get(grid[i][j], "\033[35m")  # purple for other values
+
+            # Append colored character to visualization
+            vis[i] += color + grid[i][j] + "\033[0m"
+
+    # Join rows of visualization into a single string
+    return "\n".join(vis)
+
+res = ""
+output_map = map.generate_map()
+for row in output_map:
+    res += (' '.join(row))
+    res += '\n'
+
+grid = parse_grid(res)
+
+res = map.generate_map()
+for row in res:
+    print(' '.join(row))
+
+print(visualize_grid(grid, N))
