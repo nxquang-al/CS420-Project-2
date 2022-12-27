@@ -18,13 +18,9 @@ class Map:
 
         self.num_regions = None
         self.adjacent_list = self.get_neighbors()    # List of numpy array of adjacent regions
-        self.region_boundaries = []                 # List of numpy array [bound_region_1, bound_region_2,...]
-
-        for i in range(self.num_regions):
-            self.region_boundaries.append(self.get_region_boundary(region_idx=i))
     
     def get_map_shape(self):
-        return self.width, self.height
+        return (self.width, self.height)
     
     def generate_map(self):
         return
@@ -141,45 +137,45 @@ class Map:
     def check_direction(self, prison_pos, direction):
         (x,y) = prison_pos
         (Tx, Ty) = self.treasure_pos
-        if direction=='E':
+        if direction=='East':
             if Tx < x:
                 return False
             return (Ty <= y and Ty+Tx >= y+x) or (Ty > y and Tx-Ty >= x-y)
-        elif direction == 'W':
+        elif direction == 'West':
             if Tx > x:
                 return False
             return (Ty <= y and Tx-Ty <= x-y) or (Ty > y and Tx+Ty <= x+y)
-        elif direction == 'N':
+        elif direction == 'North':
             if Ty > y:
                 return False
             return (Tx <= x and Ty-Tx <= y-x) or (Tx > x and Ty+Tx <= y+x)
-        elif direction == 'S':
+        elif direction == 'South':
             if Ty < y:
                 return False
             return (Tx <= x and Ty+Tx >= y+x) or (Tx > x and Ty-Tx >= y-x)
-        elif direction == 'SE':
+        elif direction == 'South-East':
             return Tx >= x and Ty >= y
-        elif direction == 'SW':
+        elif direction == 'South-West':
             return Tx <= x and Ty >= y
-        elif direction == 'NE':
+        elif direction == 'North-East':
             return Tx >= x and Ty <= y
         else:
             return Tx <= x and Ty <= y
 
-    def check_inside_gap(self, top_left_1, bot_right_1, top_left_2, bot_right_2):
-        Tx, Ty = self.treasure_pos
+    def check_inside_gap(self, top_left_1, bot_right_1, top_left_2, bot_right_2) -> bool:
+        (Tx, Ty) = self.treasure_pos
         if not (Tx >= top_left_1[0] and Tx <= bot_right_1[0] and Ty >= top_left_1[1] and Ty <= bot_right_1[1]):
             return False
         if Tx >= top_left_2[0] and Tx <= bot_right_2[0] and Ty >= top_left_2[1] and Ty <= bot_right_2[1]:
             return False
         return True
 
-    def check_on_boundary(self):
+    def check_on_all_boundaries(self) -> bool:
         '''
-        Check if treasure lies on a boundary
+        Check if treasure lies on a boundary of any 2 regions
         '''
         (Tx, Ty) = self.treasure_pos
-        T_region = self.map[Tx, Ty]
+        T_region = self.map[self.treasure_pos]
         if Tx-1 >= 0 and self.map[Tx-1, Ty] != T_region:
             return True
         if Tx+1 < self.width and self.map[Tx+1, Ty] != T_region:
@@ -188,6 +184,22 @@ class Map:
             return True
         if Ty+1 < self.height and self.map[Tx, Ty+1] != T_region:
             return True
+        return False
+    
+    def check_on_specific_boundary(self, rid_1, rid_2) -> bool:
+        '''
+        Given 2 regions, check if treasure lies on their boundary
+        '''
+        (Tx, Ty) = self.treasure_pos
+        T_region = self.map[self.treasure_pos]
+        if T_region != rid_1 and T_region != rid_2:
+            return False
+        elif T_region == rid_1:
+            return (Tx-1 >= 0 and self.map[Tx-1, Ty] == rid_2) or (Tx+1 < self.width and self.map[Tx+1, Ty] ==rid_2) or \
+            (Ty-1 >= 0 and self.map[Tx, Ty-1] == rid_2) or (Ty+1 < self.height and self.map[Tx, Ty+1] == rid_2)
+        else:
+            return (Tx-1 >= 0 and self.map[Tx-1, Ty] == rid_1) or (Tx+1 < self.width and self.map[Tx+1, Ty] ==rid_1) or \
+            (Ty-1 >= 0 and self.map[Tx, Ty-1] == rid_1) or (Ty+1 < self.height and self.map[Tx, Ty+1] == rid_1)
         return False
 
     
