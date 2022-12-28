@@ -3,11 +3,7 @@ import random
 from map import Map
 
 class HintManager:
-<<<<<<< HEAD
     def __init__(self, map: Map):
-=======
-    def __init__(self, map):
->>>>>>> ee4f722697b9d74fa2bf7bad4e0e3c90154b54e7
         self.map = map
         self.agent_pos = None
         self.pirate_pos = None
