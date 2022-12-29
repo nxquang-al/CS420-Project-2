@@ -18,62 +18,28 @@ class Map:
         self.num_prisons = None
         self.prisons =  None                        # Numpy array of prisons array([p1, p2, p3,...])
 
-        self.num_regions = random.randint(4, min(self.width, 7))
+        self.num_regions = random.randint(5, min(self.width, 7))
+
         self.adjacent_list = self.get_neighbors()    # List of numpy array of adjacent regions
     
     def get_map_shape(self):
         return (self.width, self.height)
     
-    def is_contiguous_region(self, x, y, region):
-        '''
-            Check if the adjacent cell belongs to the same region
-        '''
-        return (
-            (x > 0 and self.map[x-1, y] == region) 
-            or (x < self.height - 1 and self.map[x+1, y] == region)
-            or (y > 0 and self.map[x, y-1] == region)
-            or (y < self.width - 1 and self.map[x, y+1] == region))
-
-    def get_region_center(self, sea_size, region):
-        '''
-            Get the center coordinate of a region
-        '''
-        land_area = self.width - sea_size*2
-        num_regions_upper = self.num_regions // 2
-
-        start_x_upper = land_area//(num_regions_upper+1) + sea_size - 1
-        start_y_upper = (self.height//2 - sea_size) //2
-
-        if region <= self.num_regions//2:  # region on the upper half 
-            x = start_x_upper + (land_area // num_regions_upper)*(region-1)
-            y = start_y_upper
-            area = round(self.width // num_regions_upper)
-        else:   # region on the lower half
-            x = start_x_upper + (land_area // num_regions_upper)*(region-num_regions_upper-1)
-            y = start_y_upper + (self.height//2 - start_y_upper)*2 - self.width//5
-            area = round(self.width // (self.num_regions - num_regions_upper)*random.uniform(0.4, 1)) 
-        
-        if self.width > 30:
-            y -= self.width//8
-
-        return y, x, area
-
-    def get_contiguous_region(self, x, y):
-        '''
-            Return a random adjacency region of the current cell
-        '''
-        possible_region =  []
-        if x > 0: possible_region.append(self.map[x-1, y]) 
-        if y > 0: possible_region.append(self.map[x, y-1])
-        if x < self.height - 1: possible_region.append(self.map[x+1, y])
-        if y < self.width - 1: possible_region.append(self.map[x, y+1])
-        
-        filtered_region = [region for region in possible_region]
-
-        if len(filtered_region) == 0: return 0
-
-        region = np.random.choice(list(set(filtered_region)))
-        return region
+    def get_region(self, y, x):
+        if x > 0 and x < self.height and y > 0 and y < self.height:
+            return self.map[x,y]
+        return 0
+    
+    def tile_type(self, y, x):
+        if x > 0 and x < self.height and y > 0 and y < self.height:
+            for mountain in self.mountains:
+                if (x, y) in mountain:
+                    return 'M'
+            if (x, y) in self.prisons:
+                return 'P'
+            elif (x, y) == self.treasure_pos:
+                return 'T'
+        return ''
     
     def is_contiguous_region(self, x, y, region):
         '''
@@ -131,11 +97,9 @@ class Map:
             Map generator
         '''
         if self.width < 16: sea_size = 1
-        elif self.width < 32: sea_size = random.randint(1,3)
+        elif self.width < 32: sea_size = random.randint(2,3)
         elif self.width < 64: sea_size = random.randint(2,4)
         else: sea_size = random.randint(3,6)
-
-        
 
         self.map = self.map.astype(int)
 
@@ -155,9 +119,8 @@ class Map:
                 current_size = 1
 
                 # Check the adjacent cells and assign them the same region if they are empty
-                for i in range(-x, area + sea_size):
-                    # area = random.randint(region_rows, region_rows+6)
-                    for j in range(-y, area + sea_size):
+                for i in range(-x, area):
+                    for j in range(-y, area):
                         new_x, new_y = x + i, y + j
                         if (new_x > 0 and new_x < self.width - sea_size and 
                             new_y > 0 and new_y < self.height - sea_size 
@@ -168,19 +131,19 @@ class Map:
                             current_size+=1
         
         # Randomize the number of mountains
-        self.num_mountain = random.randint(self.num_regions, self.num_regions + 6)
+        self.num_mountain = random.randint(5, max(round(self.width/4), 5))
             
         # Generate the mountains
         self.mountains = []
         for i in range(self.num_mountain):
            # Randomize the size of the mountain
-            size = random.randint(5, 8)
+            size = random.randint(3, max(round(self.width/4), 4))
 
             # Generate the mountain cells
             mountain = []
             while True:
-                x = random.randint(0, self.width - sea_size)
-                y = random.randint(0, self.height - sea_size)
+                x = random.randint(0, self.width - sea_size - 1)
+                y = random.randint(0, self.height - sea_size - 1)
                 if self.map[x, y] != 0:
                     mountain.append((x, y))
                     break 
@@ -191,7 +154,7 @@ class Map:
                 while True:
                     expand = random.randrange(8)
                     new_x, new_y = x+direction[expand,0], y+direction[expand,1]
-                    if new_x > 0 and new_y > 0 and new_x < self.height and new_y < self.width:
+                    if new_x > 0 and new_y > 0 and new_x < self.height - sea_size and new_y < self.width - sea_size:
                         if self.map[new_x, new_y] != 0:
                             mountain.append((new_x, new_y))
                             break
@@ -200,15 +163,15 @@ class Map:
             self.mountains.append(mountain)
 
         # Randomize the number of prisons
-        self.num_prisons = random.randint(self.num_regions-1, self.num_regions + 3)
+        self.num_prisons = random.randint(5, max(round(self.width/4), 5))
 
         # Generate the prisons
         self.prisons = []
         for i in range(self.num_prisons):
             # Randomize the position of the prison
             while True:
-                x = random.randint(0, self.width - sea_size)
-                y = random.randint(0, self.height - sea_size)
+                x = random.randint(0, self.width - sea_size - 2)
+                y = random.randint(0, self.height - sea_size - 2)
                 if self.map[x, y] != 0:
                     prison_overlap = False
                     for mountain in self.mountains:
@@ -252,9 +215,19 @@ class Map:
         
         # Set the border cells to region 0
         self.map[:, 0] = 0
-        self.map[:, self.height - 1], self.map[:, self.height - 2] = 0, 0
+        self.map[:, self.height - 1] = 0
         self.map[0, :] = 0
         self.map[self.width - 1, :], self.map[self.width - 2, :] = 0, 0
+
+        # Make sea on the right goes random
+        for i in range(self.height):
+            sea = random.randint(2, 4)
+            for j in range(self.width-1, self.width-sea, -1):
+                tile_type = self.tile_type(j, i)
+                if tile_type == '':
+                    self.map[i, j] = 0
+                else: break
+
 
         # Initialize the output map
         output_map = np.empty((self.width, self.height), dtype='object')
@@ -538,60 +511,10 @@ class Map:
         return isNearer
 
 
-N = 32
-map = Map(N,N)
-
-def parse_grid(grid_string):
-    # Split string into rows
-    rows = grid_string.strip().split("\n")
-
-    # Split rows into cells
-    cells = [row.split() for row in rows]
-
-   # Convert cells to strings
-    return [[cell[1] if len(cell) == 2 else cell for cell in row] for row in cells]
-
-def visualize_grid(grid, n):
-    # Map values to colors
-    colors = {
-        "T": "\033[41m",  # highlighted red 
-        "M": "\033[45m",  # highlighted purple
-        "P": "\033[42m",  # highlighted green
-        "0": "\033[34m",  # blue
-        "1": "\033[33m",  # yellow
-        "2": "\033[31m",  # red
-        "3": "\033[37m",  # white
-        "4": "\033[32m",  # green
-        "5": "\033[28m",  # gray
-        "6": "\033[38;5;208m",  # orange
-        "7": "\033[36m",  # cyan
-    }
-
-   # Initialize visualization as a list of empty strings
-    vis = ["" for i in range(n)]
-
-    # Iterate over rows and columns
-    for i in range(n):
-        for j in range(n):
-            # Get color for value
-            color = colors.get(grid[i][j], "\033[35m")  # purple for other values
-
-            # Append colored character to visualization
-            vis[i] += color + grid[i][j] + "\033[0m"
-
-    # Join rows of visualization into a single string
-    return "\n".join(vis)
-
-res = ""
-output_map = map.generate_map()
-for row in output_map:
-    res += (' '.join(row))
-    res += '\n'
-
-grid = parse_grid(res)
+n, m = 16, 16
+map = Map(n,m)
 
 res = map.generate_map()
 for row in res:
     print(' '.join(row))
 
-print(visualize_grid(grid, N))
