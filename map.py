@@ -462,30 +462,31 @@ class Map:
         return False
 
     def check_square_gap(self, big_square, small_square):
-        #get the coordinates of tiles which has free y and be bounded by x (titles that are on top and bottom of gap created by 2 squares)
-        bounded_col_tiles = np.stack(
-                                np.meshgrid(
-                                    [col for col in range(big_square[0] + 1, small_square[0])] + [col for col in range(small_square[2] + 1, big_square[2])], 
-                                    [row for row in range(small_square[3], small_square[1] + 1)]
-                                ), 
-                                -1
-                            ).reshape(-1, 2)
-
-        #get the coordinates of tiles which has free x and be bounded by y (titles that are on 2 sides of gap created by 2 squares)
-        #.append([row for row in range(row[1] + 1, row[0])]
-        bounded_row_tiles = np.stack(
+        #get the coordinates of tiles which are inside the big square (not include titles on the edge)
+        big_square_tiles = np.stack(
                                 np.meshgrid(
                                     [col for col in range(big_square[0] + 1, big_square[2])], 
-                                    [row for row in range(big_square[3] + 1, small_square[3])] + [row for row in range(small_square[1] + 1, big_square[1])]
+                                    [row for row in range(big_square[1] + 1, big_square[3])]
                                 ), 
                                 -1
                             ).reshape(-1, 2)
-        
-        square_gap_tiles = np.concatenate((bounded_col_tiles, bounded_row_tiles), axis=0)
 
-        hasTreasure = False
-        if self.treasure_pos in square_gap_tiles:
-            hasTreasure = True
+        #get the coordinates of tiles which are inside the small square (include titles on the edge)
+        small_square_tiles = np.stack(
+                                np.meshgrid(
+                                    [col for col in range(small_square[0], small_square[2] + 1)], 
+                                    [row for row in range(small_square[1], small_square[3] + 1)]
+                                ), 
+                                -1
+                            ).reshape(-1, 2)
+
+        #remove all the small_square_tiles from the big_square_tiles
+        mask = np.array([not np.any(np.equal(tile, small_square_tiles).all(1)) for tile in big_square_tiles])
+        square_gap_tiles = big_square_tiles[mask]
+
+        hasTreasure = True
+        if (self.treasure_pos[0] >= small_square[0] and self.treasure_pos[0] <= small_square[2] and self.treasure_pos[1] >= small_square[1] and self.treasure_pos[1] <= small_square[3]) or (self.treasure_pos[0] <= big_square[0] or self.treasure_pos[0] >= big_square[2] or self.treasure_pos[1] <= big_square[1] or self.treasure_pos[1] >= big_square[3]):
+            hasTreasure = False
 
         return hasTreasure, square_gap_tiles
     
@@ -502,7 +503,7 @@ class Map:
                 region_tiles = np.concatenate((region_tiles, np.asarray(np.where(self.map == region)).T), axis=0)
         
         hasTreasure = False
-        if self.map[tuple(self.treasure_pos)] in list_regions:
+        if self.map[self.treasure_pos[0], self.treasure_pos[1]] in list_regions:
             hasTreasure = True
         
         return hasTreasure, region_tiles
@@ -512,30 +513,43 @@ class Map:
         rectangle_tiles = np.stack(
                             np.meshgrid(
                                 [col for col in range(rectangle[0] + 1, rectangle[2])], 
-                                [row for row in range(rectangle[3] + 1, rectangle[1])]
+                                [row for row in range(rectangle[1] + 1, rectangle[3])]
                             ), 
                             -1
                         ).reshape(-1, 2) 
         
         hasTreasure = True
         #if the treasure is outside the rectangle, this hint is false
-        if self.treasure_pos[0] <= rectangle[0] or self.treasure_pos[0] >= rectangle[2] or self.treasure_pos[1] >= rectangle[1] or self.treasure_pos[1] <= rectangle[3]:
+        if self.treasure_pos[0] <= rectangle[0] or self.treasure_pos[0] >= rectangle[2] or self.treasure_pos[1] <= rectangle[1] or self.treasure_pos[1] >= rectangle[3]:
             hasTreasure = False
 
         return hasTreasure, rectangle_tiles
 
+    def check_distance(self, agent_pos, pirate_pos):
+        agent_distance = abs(agent_pos[0] - self.treasure_pos[0]) + abs(agent_pos[-1] - self.treasure_pos[1])
+        pirate_distance = abs(pirate_pos[0] - self.treasure_pos[0]) + abs(pirate_pos[-1] - self.treasure_pos[1])
+
+        nearer_tiles = np.stack(
+                            np.meshgrid(
+                                [col for col in range(self.width)], 
+                                [row for row in range(self.height)]
+                            ), 
+                            -1
+                        ).reshape(-1, 2)
+
+        col = nearer_tiles[:, 0]
+        row = nearer_tiles[:, 1]
+        mask = (abs(agent_pos[0] - col) + abs(agent_pos[1] - row)) < (abs(pirate_pos[0] - col) + abs(pirate_pos[1] - row))
+        nearer_tiles = nearer_tiles[mask]
+        
+        isNearer = False
+        if (agent_distance < pirate_distance):
+            isNearer = True
+        
+        return isNearer, nearer_tiles
+
     def convert_to_string(self, list):
         return ', '.join(map(str, list))
-
-    def check_distance(self, agent_pos, pirate_pos):
-        agent_distance = sum(abs(agent_pos[0] - self.treasure_pos[0]), abs(agent_pos[1] - self.treasure_pos[1]))
-        pirate_distance = sum(abs(pirate_pos[0] - self.treasure_pos[0]), abs(pirate_pos[1] - self.treasure_pos[1]))
-        
-        isNearer = True
-        if (agent_distance > pirate_distance):
-            isNearer = False
-        
-        return isNearer
 
 
 N = 32
