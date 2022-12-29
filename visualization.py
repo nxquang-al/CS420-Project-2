@@ -7,6 +7,13 @@ import numpy as np
 import random
 from queue import Queue
 
+'''
+    DO NOT RUN THIS FILE WITH ANACONDA ENVIRONMENT.
+    IT SUCKS
+
+    TO CHANGE THE SIZE OF MAP, SCROLL TO THE BOTTOM OF THE MAP.PY TO MODIFY "N"
+'''
+
 
 '''
     Define colors
