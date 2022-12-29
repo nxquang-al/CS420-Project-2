@@ -7,7 +7,10 @@ class Pirate:
         This class manage the behavior of pirate
     '''
     def __init__(self, initial_pos):
-        self.path = Queue() # A queue of cells, which is the shortest path to treasure
+        # A queue of cells, which is the shortest path to treasure, an element contains (pos, log) where 
+        # pos is an numpy array representing the coordinate of the next move 
+        # log is the log of the next move
+        self.path = Queue() 
         self.visited = None # A numpy array of visited cells
         self.initial_pos = initial_pos
         self.cur_pos = initial_pos
@@ -42,11 +45,12 @@ class Pirate:
         if np.array_equal(cur_pos, self.cur_pos): 
             step = 1 
             cost = cur_move[6] + 1
+            prev_direction = -1
         else:
             step = 2
             cost = cur_move[6]
 
-        offset_pos = np.array([[0, 1], [0, -1], [-1, 0], [1, 0]])
+        offset_pos = np.array([[0, -1], [0, 1], [-1, 0], [1, 0]])
         prev_pos = np.full((4, 2), cur_pos)                
         next_pos = cur_pos + offset_pos
         if prev_direction == 0:
@@ -98,6 +102,39 @@ class Pirate:
         
         return next_moves
 
+    def get_log(self, cur_move):
+        #[prev_x, prev_y, next_x, next_y, direction, num_tiles, path_cost, heuristics]
+        cur_pos = cur_move[2:4]
+        direction = cur_move[4]
+        num_tiles = cur_move[5]
+        if direction == 0:
+            log = "The pirate moves {} steps to the north.".format(num_tiles)
+        elif direction == 1:
+            log = "The pirate moves {} steps to the south.".format(num_tiles)
+        elif direction == 2:
+            log = "The pirate moves {} steps to the west.".format(num_tiles)
+        elif direction == 3:
+            log = "The pirate moves {} steps to the east.".format(num_tiles)
+        elif direction == 4:
+            log = "The pirate moves 1 step to the north and then 1 step to the west."
+        elif direction == 5:
+            log = "The pirate moves 1 step to the north and then 1 step to the east."
+        elif direction == 6:
+            log = "The pirate moves 1 step to the south and then 1 step to the west."
+        elif direction == 7:
+            log = "The pirate moves 1 step to the south and then 1 step to the east."
+        elif direction == 8:
+            log = "The pirate moves 1 step to the west and then 1 step to the north."
+        elif direction == 9:
+            log = "The pirate moves 1 step to the west and then 1 step to the south."
+        elif direction == 10:
+            log = "The pirate moves 1 step to the east and then 1 step to the north."
+        elif direction == 11:
+            log = "The pirate moves 1 step to the east and then 1 step to the south."
+        else:
+            log = "The pirate is at the {} prison. The pirate is free".format(cur_pos)
+        return log
+
     def find_shortest_path(self):
         '''
             Find shortes path to treasure using A* search+
@@ -109,12 +146,13 @@ class Pirate:
         explored = None
 
         while np.size(frontier):
-            #froniter.pop()
-            cur_move = frontier[0]    #get the first element
-            frontier = frontier[1:]   #remove the first elemt
+            #choose 1 and move and do not left anything
+            cur_move = frontier[0]    
+            frontier = frontier[frontier.shape[0] + 1:]   
             
             self.cur_pos = cur_move[2:4]
-            self.path.put(self.cur_pos) 
+            log = self.get_log(cur_move)
+            self.path.put((self.cur_pos, log)) 
             
             #goal test
             if np.array_equal(self.cur_pos, self.hint_manager.map.treasure_pos):
@@ -139,7 +177,17 @@ class Pirate:
         self.cur_pos = self.initial_pos
         return
 
-    def get_path(self):
+    def test_run(self):
         while not self.path.empty():
-            pos = self.path.get()
-            print(pos)
+            next_move = self.path.get()
+            print(next_move[0], ' --- ', next_move[1])
+
+# 
+# def main():
+#     pirate = Pirate(np.array([5, 11]))
+#     pirate.find_shortest_path()
+#     pirate.test_run()
+#     return
+
+# if __name__ == "__main__":
+#     main()
