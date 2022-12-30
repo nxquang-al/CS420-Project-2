@@ -3,11 +3,7 @@ import random
 from map import Map
 
 class HintManager:
-<<<<<<< HEAD
     def __init__(self, map: Map):
-=======
-    def __init__(self, map):
->>>>>>> ee4f722697b9d74fa2bf7bad4e0e3c90154b54e7
         self.map = map
         self.agent_pos = None
         self.pirate_pos = None
@@ -19,43 +15,41 @@ class HintManager:
         Use switch-case here
         '''
         #need to update to get the latest positions of the agent and pirate so we can generate the 6th typed hint
-        self.agent_pos = agent_pos
-        self.pirate_pos = pirate_pos
+        # self.agent_pos = agent_pos
+        # self.pirate_pos = pirate_pos
         
         hint_type = np.random.randint(1, 16)
         
         if (hint_type == 1):
-            hint = self.gen_1st_type()
+            return self.gen_1st_type()
         elif (hint_type == 2): 
-            hint = self.gen_2nd_type()
+            return self.gen_2nd_type()
         elif (hint_type == 3):
-            hint = self.gen_3rd_type()
+            return self.gen_3rd_type()
         elif (hint_type == 4): 
-            hint = self.gen_4th_type()
+            return self.gen_4th_type()
         elif (hint_type == 5): 
-            hint = self.gen_5th_type()
+            return self.gen_5th_type()
         elif (hint_type == 6): 
-            hint = self.gen_6th_type()
+            return self.gen_6th_type()
         elif (hint_type == 7): 
-            hint = self.gen_7th_type()
+            return self.gen_7th_type()
         elif (hint_type == 8): 
-            hint = self.gen_8th_type()
+            return self.gen_8th_type()
         elif (hint_type == 9): 
-            hint = self.gen_9th_type()
+            return self.gen_9th_type()
         elif (hint_type == 10): 
-            hint = self.gen_10th_type()
+            return self.gen_10th_type()
         elif (hint_type == 11): 
-            hint = self.gen_11th_type()
+            return self.gen_11th_type()
         elif (hint_type == 12): 
-            hint = self.gen_12th_type()
+            return self.gen_12th_type()
         elif (hint_type == 13): 
-            hint = self.gen_13th_type()
+            return self.gen_13th_type()
         elif (hint_type == 14): 
-            hint = self.gen_14th_type()
+            return self.gen_14th_type()
         else: 
-            hint = self.gen_15th_type()
-
-        return hint
+            return self.gen_15th_type()
     
     def gen_first_hint(self, agent_pos, pirate_pos):
         '''
@@ -67,45 +61,40 @@ class HintManager:
         hint_type = np.random.randint(1, 16)
         truth_val = False
 
-        while truth_val == False:        
+        while not truth_val:        
             if (hint_type == 1):
-                hint = self.gen_1st_type()
+                hint_type, log, truth_val, data = self.gen_1st_type()
             elif (hint_type == 2): 
-                hint = self.gen_2nd_type()
+                hint_type, log, truth_val, data = self.gen_2nd_type()
             elif (hint_type == 3):
-                hint = self.gen_3rd_type()
+                hint_type, log, truth_val, data = self.gen_3rd_type()
             elif (hint_type == 4): 
-                hint = self.gen_4th_type()
+                hint_type, log, truth_val, data = self.gen_4th_type()
             elif (hint_type == 5): 
-                hint = self.gen_5th_type()
+                hint_type, log, truth_val, data = self.gen_5th_type()
             elif (hint_type == 6): 
-                hint = self.gen_6th_type()
+                hint_type, log, truth_val, data = self.gen_6th_type()
             elif (hint_type == 7): 
-                hint = self.gen_7th_type()
+                hint_type, log, truth_val, data = self.gen_7th_type()
             elif (hint_type == 8): 
-                hint = self.gen_8th_type()
+                hint_type, log, truth_val, data = self.gen_8th_type()
             elif (hint_type == 9): 
-                hint = self.gen_9th_type()
+                hint_type, log, truth_val, data = self.gen_9th_type()
             elif (hint_type == 10): 
-                hint = self.gen_10th_type()
+                hint_type, log, truth_val, data = self.gen_10th_type()
             elif (hint_type == 11): 
-                hint = self.gen_11th_type()
+                hint_type, log, truth_val, data = self.gen_11th_type()
             elif (hint_type == 12): 
-                hint = self.gen_12th_type()
+                hint_type, log, truth_val, data = self.gen_12th_type()
             elif (hint_type == 13): 
-                hint = self.gen_13th_type()
+                hint_type, log, truth_val, data = self.gen_13th_type()
             elif (hint_type == 14): 
-                hint = self.gen_14th_type()
+                hint_type, log, truth_val, data = self.gen_14th_type()
             else: 
-                hint = self.gen_15th_type()
+                hint_type, log, truth_val, data = self.gen_15th_type()
 
-            truth_val = hint[1]
-
-        return hint
+        return hint_type, log, truth_val, data
     
-    def verify(self, data):
-
-        return
 
     def gen_1st_type(self):
         '''
@@ -161,7 +150,7 @@ class HintManager:
         
         truth, array_of_tiles = self.map.check_region(list_regions)
         
-        return 3, log, not truth, list_regions
+        return 3, log, (not truth), list_regions
 
     def gen_4th_type(self):
         '''
@@ -218,7 +207,7 @@ class HintManager:
         
         truth = self.map.check_distance(self.agent_pos, self.pirate_pos)
         
-        return 6, log, truth
+        return 6, log, truth, None
         
     def gen_7th_type(self):
         '''
@@ -311,29 +300,30 @@ class HintManager:
         num_tiles = random.randint(2,3)
         log = 'The treasure is somewhere in an area bounded by {num_tiles} tiles from sea'
 
-        binary_map = np.where(self.map==0, True, False)
-        mask = not binary_map
-        res = np.zeros(self.map.get_map_shape(), bool)
+        sea = np.where(self.map==0, True, False)
+        not_sea = np.logical_not(sea)
+        binary_mask = np.zeros(self.map.get_map_shape(), bool)
 
         for _ in range(num_tiles):
-            upward = np.roll(binary_map, -1, axis=0)
+            upward = np.roll(sea, -1, axis=0)
             upward[-1,] = False
 
-            downward = np.roll(binary_map, shift=1, axis=0)
+            downward = np.roll(sea, shift=1, axis=0)
             downward[0,] = False
 
-            leftward = np.roll(binary_map, shift=-1, axis=0)
+            leftward = np.roll(sea, shift=-1, axis=1)
             leftward[:,-1] = False
 
-            rightward = np.roll(binary_map, shift=1, axis=0)
+            rightward = np.roll(sea, shift=1, axis=1)
             rightward[:,0] = 0
 
-            binary_map = upward + downward + leftward + rightward
-            res += binary_map
-        res &= mask
-        truth =  res[self.map.treasure_pos]
+            sea = upward + downward + leftward + rightward
+            binary_mask += sea
 
-        return 11, log, truth, res
+        binary_mask &= not_sea
+        truth =  binary_mask[self.map.treasure_pos]
+
+        return 11, log, truth, binary_mask
 
     def gen_12th_type(self):
         '''
@@ -370,53 +360,57 @@ class HintManager:
         choice = random.randint(0,7)
         mask = np.zeros(self.map.get_map_shape(), dtype=bool)
         if choice == 0:
-            # East
             direction = 'East'
             for y in range(mask.shape[1]):
                 if y <= pos[1]:
                     idx = pos[0] + pos[1] - y
                 else:
-                    idx = y - pos[0] + pos[1]
+                    idx = y - pos[1] + pos[0]
                 mask[idx:, y] = 1
         elif choice == 1:
             direction = 'West'
             for y in range(mask.shape[1]):
                 if y <= pos[1]:
-                    idx = y - pos[0] + pos[1]
+                    idx = y - pos[1] + pos[0]
                 else:
                     idx = pos[0] + pos[1] - y
-                mask[:idx, y] = 1
+                if idx >= 0:
+                    mask[:idx+1, y] = 1
         elif choice == 2:
-            direction = 'North'
-            for x in range(mask.shape[0]):
-                if x <= pos[0]:
-                    idx = x + pos[0] - pos[1]
-                else:
-                    idx = pos[0] + pos[1] - x
-                mask[x, :idx] = 1
-        elif choice == 3:
             direction = 'South'
             for x in range(mask.shape[0]):
                 if x <= pos[0]:
                     idx = pos[0] + pos[1] - x
                 else:
-                    idx = x + pos[0] - pos[1]
+                    idx = x + pos[1] - pos[0]
                 mask[x, idx:] = 1
+        elif choice == 3:
+            direction = 'North'
+            for x in range(mask.shape[0]):
+                if x <= pos[0]:
+                    idx = x + pos[1] - pos[0]
+                else:
+                    idx = pos[0] + pos[1] - x
+                if idx >= 0:
+                    mask[x, :idx+1] = 1
         elif choice == 4:
-            # South-East
             direction = 'South-East'
+            mask[pos[0]:, pos[1]:] = 1
         elif choice == 5:
-            # South-West
             direction = 'South-West'
+            mask[:pos[0]+1, pos[1]:] = 1
         elif choice == 6:
             # North-East
             direction = 'North-East'
+            mask[pos[0]:, :pos[1]+1] = 1
         elif choice == 7:
             # North-West
             direction = 'North-West'
+            mask[:pos[0]+1, :pos[1]+1] = 1
+            
         truth = self.map.check_direction(direction)
-        log = "Treasure is in the {direction} of the pirate's position"
-        return 13, log, truth, choice 
+        log = "Treasure is in the {} of the pirate's position {}".format(direction, pos)
+        return 13, log, truth, mask
  
     def gen_14th_type(self):
         '''
@@ -449,7 +443,7 @@ class HintManager:
     
         truth, array_of_tiles = self.map.check_square_gap(big_square, small_square)
 
-        return 14, log, truth, big_square, small_square
+        return 14, log, truth, np.array([big_square, small_square])
     
     def gen_15th_type(self):
         '''

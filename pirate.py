@@ -9,7 +9,6 @@ class Pirate:
     def __init__(self, inital_pos):
         self.path = None # A queue of cells, which is the shortest path to treasure
         self.visited = None # A numpy array of visited cells
-        self.hint_manager = HintManager()
     
     def find_shortest_path(self):
         '''
