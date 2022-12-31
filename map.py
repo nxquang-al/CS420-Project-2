@@ -3,36 +3,41 @@ from scipy.ndimage import binary_dilation
 import random
 import math
 
+
 class Map:
     '''
         This class will manage everything related to map
     '''
+
     def __init__(self, width, height):
         self.width = width
         self.height = height
         self.map = np.zeros((width, height))
-        self.__treasure_pos = None
+        self.treasure_pos = None
 
         self.num_mountain = None
-        self.mountains = []                         # Numpy array of mountaine array([m1, m2,...])
+        # Numpy array of mountaine array([m1, m2,...])
+        self.mountains = []
         self.num_prisons = None
-        self.prisons =  None                        # Numpy array of prisons array([p1, p2, p3,...])
+        # Numpy array of prisons array([p1, p2, p3,...])
+        self.prisons = None
 
         self.num_regions = random.randint(5, min(self.width, 7))
 
-        self.adjacent_list = self.get_neighbors()    # List of numpy array of adjacent regions
-    
+        # List of numpy array of adjacent regions
+        self.adjacent_list = self.get_neighbors()
+
     def get_map_shape(self):
         return (self.width, self.height)
-    
+
     def get_region(self, y, x):
         if x > 0 and x < self.height and y > 0 and y < self.height:
-            return self.map[x,y]
+            return self.map[x, y]
         return 0
-    
+
     def get_region_tiles(self, region_idx):
-        return np.where(self.map==region_idx, 1, 0)
-    
+        return np.where(self.map == region_idx, 1, 0)
+
     def is_mountain(self, pos):
         pos = np.asarray(pos)
         return any(np.array_equal(pos, mountain) for mountain in self.mountains)
@@ -50,13 +55,13 @@ class Map:
             elif (x, y) == self.treasure_pos:
                 return 'T'
         return ''
-    
+
     def is_contiguous_region(self, x, y, region):
         '''
             Check if the adjacent cell belongs to the same region
         '''
         return (
-            (x > 0 and self.map[x-1, y] == region) 
+            (x > 0 and self.map[x-1, y] == region)
             or (x < self.height - 1 and self.map[x+1, y] == region)
             or (y > 0 and self.map[x, y-1] == region)
             or (y < self.width - 1 and self.map[x, y+1] == region))
@@ -69,17 +74,20 @@ class Map:
         num_regions_upper = self.num_regions // 2
 
         start_x_upper = land_area//(num_regions_upper+1) + sea_size - 1
-        start_y_upper = (self.height//2 - sea_size) //2
+        start_y_upper = (self.height//2 - sea_size) // 2
 
-        if region <= self.num_regions//2:  # region on the upper half 
+        if region <= self.num_regions//2:  # region on the upper half
             x = start_x_upper + (land_area // num_regions_upper)*(region-1)
             y = start_y_upper
             area = round(self.width // num_regions_upper)
         else:   # region on the lower half
-            x = start_x_upper + (land_area // num_regions_upper)*(region-num_regions_upper-1)
-            y = start_y_upper + (self.height//2 - start_y_upper)*2 - self.width//5
-            area = round(self.width // (self.num_regions - num_regions_upper)*random.uniform(0.4, 1)) 
-        
+            x = start_x_upper + (land_area // num_regions_upper) * \
+                (region-num_regions_upper-1)
+            y = start_y_upper + \
+                (self.height//2 - start_y_upper)*2 - self.width//5
+            area = round(self.width // (self.num_regions -
+                         num_regions_upper)*random.uniform(0.4, 1))
+
         if self.width > 30:
             y -= self.width//8
 
@@ -89,31 +97,40 @@ class Map:
         '''
             Return a random adjacency region of the current cell
         '''
-        possible_region =  []
-        if x > 0: possible_region.append(self.map[x-1, y]) 
-        if y > 0: possible_region.append(self.map[x, y-1])
-        if x < self.height - 1: possible_region.append(self.map[x+1, y])
-        if y < self.width - 1: possible_region.append(self.map[x, y+1])
-        
+        possible_region = []
+        if x > 0:
+            possible_region.append(self.map[x-1, y])
+        if y > 0:
+            possible_region.append(self.map[x, y-1])
+        if x < self.height - 1:
+            possible_region.append(self.map[x+1, y])
+        if y < self.width - 1:
+            possible_region.append(self.map[x, y+1])
+
         filtered_region = [region for region in possible_region]
 
-        if len(filtered_region) == 0: return 0
+        if len(filtered_region) == 0:
+            return 0
 
         region = np.random.choice(list(set(filtered_region)))
         return region
-    
+
     def generate_map(self):
         '''
             Map generator
         '''
-        if self.width < 16: sea_size = 1
-        elif self.width < 32: sea_size = random.randint(2,3)
-        elif self.width < 64: sea_size = random.randint(2,4)
-        else: sea_size = random.randint(3,6)
+        if self.width < 16:
+            sea_size = 1
+        elif self.width < 32:
+            sea_size = random.randint(2, 3)
+        elif self.width < 64:
+            sea_size = random.randint(2, 4)
+        else:
+            sea_size = random.randint(3, 6)
 
         self.map = self.map.astype(int)
 
-        for region in range (1, self.num_regions):
+        for region in range(1, self.num_regions):
             queue = []
             center_x, center_y, area = self.get_region_center(sea_size, region)
             queue.append((center_x, center_y))
@@ -132,17 +149,17 @@ class Map:
                 for i in range(-x, area):
                     for j in range(-y, area):
                         new_x, new_y = x + i, y + j
-                        if (new_x > 0 and new_x < self.width - sea_size and 
-                            new_y > 0 and new_y < self.height - sea_size 
+                        if (new_x > 0 and new_x < self.width - sea_size and
+                            new_y > 0 and new_y < self.height - sea_size
                             and (self.is_contiguous_region(new_x, new_y, region))
-                            and current_size < region_size): 
+                                and current_size < region_size):
 
                             self.map[new_x, new_y] = region
-                            current_size+=1
-        
+                            current_size += 1
+
         # Randomize the number of mountains
         self.num_mountain = random.randint(5, max(round(self.width/4), 5))
-            
+
         # Generate the mountains
         self.mountains = []
         for i in range(self.num_mountain):
@@ -156,14 +173,16 @@ class Map:
                 y = random.randint(0, self.height - sea_size - 1)
                 if self.map[x, y] != 0:
                     mountain.append((x, y))
-                    break 
+                    break
 
             for j in range(1, size):
                 # Mountain can be diagonal adjacent to each other
-                direction = np.array([[-1, 0], [1, 0], [0, -1], [0, 1], [-1, 1], [1, 1], [1, -1], [-1, -1]])
+                direction = np.array(
+                    [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, 1], [1, 1], [1, -1], [-1, -1]])
                 while True:
                     expand = random.randrange(8)
-                    new_x, new_y = x+direction[expand,0], y+direction[expand,1]
+                    new_x, new_y = x + \
+                        direction[expand, 0], y+direction[expand, 1]
                     if new_x > 0 and new_y > 0 and new_x < self.height - sea_size and new_y < self.width - sea_size:
                         if self.map[new_x, new_y] != 0:
                             mountain.append((new_x, new_y))
@@ -208,10 +227,10 @@ class Map:
                 if not treasure_overlap:
                     self.treasure_pos = (x, y)
                     break
-                
+
         # Traverse the whole map to make sure that there is no uncontiguous cells
         # having the same region.
-        for row in range (self.height):
+        for row in range(self.height):
             for col in range(self.width):
                 if self.is_contiguous_region(row, col, self.map[row][col]) == False:
                     self.map[row][col] = self.get_contiguous_region(row, col)
@@ -220,9 +239,10 @@ class Map:
                         self.map[row][col] = self.map[row][col-1]
                     temp_col = col
                     while temp_col+1 < self.width and self.map[row][temp_col+1] == 0:
-                        self.map[row][temp_col+1] = self.get_contiguous_region(row, temp_col+1)
-                        temp_col+=1
-        
+                        self.map[row][temp_col +
+                                      1] = self.get_contiguous_region(row, temp_col+1)
+                        temp_col += 1
+
         # Set the border cells to region 0
         self.map[:, 0] = 0
         self.map[:, self.height - 1] = 0
@@ -236,8 +256,8 @@ class Map:
                 tile_type = self.tile_type(j, i)
                 if tile_type == '':
                     self.map[i, j] = 0
-                else: break
-
+                else:
+                    break
 
         # Initialize the output map
         output_map = np.empty((self.width, self.height), dtype='object')
@@ -285,12 +305,12 @@ class Map:
         self.map = self.map.astype(int)
 
         # Check vertical adjacency
-        a, b = self.map[:-1, :], self.map[1:,:]
-        temp[a[a!=b], b[a!=b]] = True
+        a, b = self.map[:-1, :], self.map[1:, :]
+        temp[a[a != b], b[a != b]] = True
 
         # Check horizontal adjacency
         a, b = self.map[:, :-1], self.map[:, 1:]
-        temp[a[a!=b], b[a!=b]] = True
+        temp[a[a != b], b[a != b]] = True
 
         # adjacency in both directions
         result = (temp | temp.T).astype(int)
@@ -307,16 +327,18 @@ class Map:
             binary_mask: 2d map with 1's for boundary and 0's for others
         '''
         # Convert map to a binary map by masking other regions
-        binary_mask = np.where(self.map==region_idx, 1, 0)
+        binary_mask = np.where(self.map == region_idx, 1, 0)
 
         # use binary dilation to find outer 1's
-        k = np.zeros((3,3),dtype=int); k[1] = 1; k[:,1] = 1
-        binary_mask = binary_dilation(binary_mask==0, k) & binary_mask
+        k = np.zeros((3, 3), dtype=int)
+        k[1] = 1
+        k[:, 1] = 1
+        binary_mask = binary_dilation(binary_mask == 0, k) & binary_mask
 
         # Get outer 1's positions and transform to array
-        x,y = np.where(binary_mask==1)
-        boundary = np.vstack((x,y)).T
-        return boundary, binary_mask #array[[x0,y0],[x1,y1],...]
+        x, y = np.where(binary_mask == 1)
+        boundary = np.vstack((x, y)).T
+        return boundary, binary_mask  # array[[x0,y0],[x1,y1],...]
 
     def is_adjacent(self, rid_1, rid_2):
         '''
@@ -351,25 +373,27 @@ class Map:
                 b2.add((col, row-1))
 
         return np.array(list(b1)), np.array(list(b2))
-    
+
     def get_all_boundaries(self):
         '''
         Find every tiles lying on boundary of every region, except the sea
+        Return:
+            tiles: array of boundary tiles
+            binary_mask: a map represent boundary=1, others=0
         '''
         binary_mask = np.zeros((self.width, self.height), dtype=bool)
         for i in range(1, self.num_regions+1):
-            mask = self.get_region_boundary(i)
+            _, mask = self.get_region_boundary(i)
             binary_mask = np.logical_or(binary_mask, mask)
-        
-        sea = np.where(self.map==0, False, True)
+
+        sea = np.where(self.map == 0, False, True)
         binary_mask = np.logical_and(binary_mask, sea)
 
-        x,y = np.where(binary_mask==1)
-        boundary = np.vstack((x,y)).T
-        return boundary, binary_mask
+        x, y = np.where(binary_mask == 1)
+        tiles = np.vstack((x, y)).T
+        return tiles, binary_mask
 
-
-    def is_movable(self,pos):
+    def is_movable(self, pos):
         '''
             Check if this cell is moveable (not mountain, sea)
         '''
@@ -381,27 +405,27 @@ class Map:
         '''
         Check if treasure is on given column
         '''
-        return col_idx == self.__treasure_pos[0]
+        return col_idx == self.treasure_pos[0]
 
     def check_row(self, row_idx):
         '''
         Check if treasure is on given row
         '''
-        return row_idx == self.__treasure_pos[1]
-    
+        return row_idx == self.treasure_pos[1]
+
     def check_rectangle_region(self, top_left, bot_right):
         '''
         Check if treasure is in a rectangle bounded by top_left and bot_right
         '''
         (x0, y0) = top_left
         (x1, y1) = bot_right
-        (T_x, T_y) = self.__treasure_pos
+        (T_x, T_y) = self.treasure_pos
         return T_x >= x0 and T_x <= x1 and T_y >= y0 and T_y <= y1
-    
+
     def check_direction(self, pos, direction):
-        (x,y) = pos
-        (Tx, Ty) = self.__treasure_pos
-        if direction=='East':
+        (x, y) = pos
+        (Tx, Ty) = self.treasure_pos
+        if direction == 'East':
             if Tx < x:
                 return False
             return (Ty <= y and Ty+Tx >= y+x) or (Ty > y and Tx-Ty >= x-y)
@@ -427,7 +451,7 @@ class Map:
             return Tx <= x and Ty <= y
 
     def check_inside_gap(self, top_left_1, bot_right_1, top_left_2, bot_right_2) -> bool:
-        (Tx, Ty) = self.__treasure_pos
+        (Tx, Ty) = self.treasure_pos
         if not (Tx >= top_left_1[0] and Tx <= bot_right_1[0] and Ty >= top_left_1[1] and Ty <= bot_right_1[1]):
             return False
         if Tx >= top_left_2[0] and Tx <= bot_right_2[0] and Ty >= top_left_2[1] and Ty <= bot_right_2[1]:
@@ -438,8 +462,8 @@ class Map:
         '''
         Check if treasure lies on a boundary of any 2 regions
         '''
-        (Tx, Ty) = self.__treasure_pos
-        T_region = self.map[self.__treasure_pos]
+        (Tx, Ty) = self.treasure_pos
+        T_region = self.map[self.treasure_pos]
         if Tx-1 >= 0 and self.map[Tx-1, Ty] != T_region:
             return True
         if Tx+1 < self.width and self.map[Tx+1, Ty] != T_region:
@@ -449,44 +473,49 @@ class Map:
         if Ty+1 < self.height and self.map[Tx, Ty+1] != T_region:
             return True
         return False
-    
+
     def check_on_specific_boundary(self, rid_1, rid_2) -> bool:
         '''
         Given 2 regions, check if treasure lies on their boundary
         '''
-        (Tx, Ty) = self.__treasure_pos
-        T_region = self.map[self.__treasure_pos]
+        (Tx, Ty) = self.treasure_pos
+        T_region = self.map[self.treasure_pos]
         if T_region != rid_1 and T_region != rid_2:
             return False
         elif T_region == rid_1:
-            return (Tx-1 >= 0 and self.map[Tx-1, Ty] == rid_2) or (Tx+1 < self.width and self.map[Tx+1, Ty] ==rid_2) or \
-            (Ty-1 >= 0 and self.map[Tx, Ty-1] == rid_2) or (Ty+1 < self.height and self.map[Tx, Ty+1] == rid_2)
+            return (Tx-1 >= 0 and self.map[Tx-1, Ty] == rid_2) or (Tx+1 < self.width and self.map[Tx+1, Ty] == rid_2) or \
+                (Ty-1 >= 0 and self.map[Tx, Ty-1] == rid_2) or (Ty +
+                                                                1 < self.height and self.map[Tx, Ty+1] == rid_2)
         else:
-            return (Tx-1 >= 0 and self.map[Tx-1, Ty] == rid_1) or (Tx+1 < self.width and self.map[Tx+1, Ty] ==rid_1) or \
-            (Ty-1 >= 0 and self.map[Tx, Ty-1] == rid_1) or (Ty+1 < self.height and self.map[Tx, Ty+1] == rid_1)
+            return (Tx-1 >= 0 and self.map[Tx-1, Ty] == rid_1) or (Tx+1 < self.width and self.map[Tx+1, Ty] == rid_1) or \
+                (Ty-1 >= 0 and self.map[Tx, Ty-1] == rid_1) or (Ty +
+                                                                1 < self.height and self.map[Tx, Ty+1] == rid_1)
         return False
 
     def check_square_gap(self, big_square, small_square):
-        #get the coordinates of tiles which are inside the big square (not include titles on the edge)
+        # get the coordinates of tiles which are inside the big square (not include titles on the edge)
         big_square_tiles = np.stack(
-                                np.meshgrid(
-                                    [col for col in range(big_square[0] + 1, big_square[2])], 
-                                    [row for row in range(big_square[1] + 1, big_square[3])]
-                                ), 
-                                -1
-                            ).reshape(-1, 2)
+            np.meshgrid(
+                [col for col in range(big_square[0] + 1, big_square[2])],
+                [row for row in range(
+                    big_square[1] + 1, big_square[3])]
+            ),
+            -1
+        ).reshape(-1, 2)
 
-        #get the coordinates of tiles which are inside the small square (include titles on the edge)
+        # get the coordinates of tiles which are inside the small square (include titles on the edge)
         small_square_tiles = np.stack(
-                                np.meshgrid(
-                                    [col for col in range(small_square[0], small_square[2] + 1)], 
-                                    [row for row in range(small_square[1], small_square[3] + 1)]
-                                ), 
-                                -1
-                            ).reshape(-1, 2)
+            np.meshgrid(
+                [col for col in range(small_square[0], small_square[2] + 1)],
+                [row for row in range(
+                    small_square[1], small_square[3] + 1)]
+            ),
+            -1
+        ).reshape(-1, 2)
 
-        #remove all the small_square_tiles from the big_square_tiles
-        mask = np.array([not np.any(np.equal(tile, small_square_tiles).all(1)) for tile in big_square_tiles])
+        # remove all the small_square_tiles from the big_square_tiles
+        mask = np.array([not np.any(np.equal(tile, small_square_tiles).all(1))
+                        for tile in big_square_tiles])
         square_gap_tiles = big_square_tiles[mask]
 
         hasTreasure = True
@@ -494,66 +523,69 @@ class Map:
             hasTreasure = False
 
         return hasTreasure, square_gap_tiles
-    
+
     def get_mountain_region(self):
-        #get the list of regions which have mountain 
-        return np.unique(self.map[self.mountains[:, 0], self.mountains[:, 1]])   
+        # get the list of regions which have mountain
+        return np.unique(self.map[self.mountains[:, 0], self.mountains[:, 1]])
 
     def check_region(self, list_regions):
         region_tiles = None
-        for region in list_regions:      
+        for region in list_regions:
             if region_tiles is None:
                 region_tiles = np.asarray(np.where(self.map == region)).T
             else:
-                region_tiles = np.concatenate((region_tiles, np.asarray(np.where(self.map == region)).T), axis=0)
-        
+                region_tiles = np.concatenate(
+                    (region_tiles, np.asarray(np.where(self.map == region)).T), axis=0)
+
         hasTreasure = False
         if self.map[self.treasure_pos[0], self.treasure_pos[1]] in list_regions:
             hasTreasure = True
-        
+
         return hasTreasure, region_tiles
 
     def check_rectangle(self, rectangle):
-        #get the list of coordinates of titles which are inside the rectangle
+        # get the list of coordinates of titles which are inside the rectangle
         rectangle_tiles = np.stack(
-                            np.meshgrid(
-                                [col for col in range(rectangle[0] + 1, rectangle[2])], 
-                                [row for row in range(rectangle[1] + 1, rectangle[3])]
-                            ), 
-                            -1
-                        ).reshape(-1, 2) 
-        
+            np.meshgrid(
+                [col for col in range(rectangle[0] + 1, rectangle[2])],
+                [row for row in range(
+                    rectangle[1] + 1, rectangle[3])]
+            ),
+            -1
+        ).reshape(-1, 2)
+
         hasTreasure = True
-        #if the treasure is outside the rectangle, this hint is false
+        # if the treasure is outside the rectangle, this hint is false
         if self.treasure_pos[0] <= rectangle[0] or self.treasure_pos[0] >= rectangle[2] or self.treasure_pos[1] <= rectangle[1] or self.treasure_pos[1] >= rectangle[3]:
             hasTreasure = False
 
         return hasTreasure, rectangle_tiles
 
     def check_distance(self, agent_pos, pirate_pos):
-        agent_distance = abs(agent_pos[0] - self.treasure_pos[0]) + abs(agent_pos[-1] - self.treasure_pos[1])
-        pirate_distance = abs(pirate_pos[0] - self.treasure_pos[0]) + abs(pirate_pos[-1] - self.treasure_pos[1])
+        agent_distance = abs(
+            agent_pos[0] - self.treasure_pos[0]) + abs(agent_pos[-1] - self.treasure_pos[1])
+        pirate_distance = abs(
+            pirate_pos[0] - self.treasure_pos[0]) + abs(pirate_pos[-1] - self.treasure_pos[1])
 
         nearer_tiles = np.stack(
-                            np.meshgrid(
-                                [col for col in range(self.width)], 
-                                [row for row in range(self.height)]
-                            ), 
-                            -1
-                        ).reshape(-1, 2)
+            np.meshgrid(
+                [col for col in range(self.width)],
+                [row for row in range(self.height)]
+            ),
+            -1
+        ).reshape(-1, 2)
 
         col = nearer_tiles[:, 0]
         row = nearer_tiles[:, 1]
-        mask = (abs(agent_pos[0] - col) + abs(agent_pos[1] - row)) < (abs(pirate_pos[0] - col) + abs(pirate_pos[1] - row))
+        mask = (abs(agent_pos[0] - col) + abs(agent_pos[1] - row)
+                ) < (abs(pirate_pos[0] - col) + abs(pirate_pos[1] - row))
         nearer_tiles = nearer_tiles[mask]
-        
+
         isNearer = False
         if (agent_distance < pirate_distance):
             isNearer = True
-        
+
         return isNearer, nearer_tiles
 
     def convert_to_string(self, list):
         return ', '.join(map(str, list))
-
-
