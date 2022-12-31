@@ -238,8 +238,7 @@ class MapDisplay(tk.CTkFrame):
                 break
 
     # Randomize the position of agent FOR TESTING
-<< << << < HEAD
-   def move_agent(self, x_des=5, y_des=5):
+    def move_agent(self, x_des=5, y_des=5):
         height, width = map.get_map_shape()
         while True:
             x_des, y_des = random.randint(
@@ -363,7 +362,7 @@ class LogDisplay(tk.CTkFrame):
     def insert_log(self, content="> Game start"):
         self.text.configure(state="normal")  # Set log to read and write
         self.text.insert(tk.END, f"{content}\n")
-        self.text.configure(state="disabled") # Set log to read-only
+        self.text.configure(state="disabled")  # Set log to read-only
 
 
 class RegionDisplay(tk.CTkFrame):
