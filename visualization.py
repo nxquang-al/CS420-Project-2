@@ -2,10 +2,11 @@ import tkinter
 import customtkinter as tk
 from tkinter import ttk
 import sv_ttk
-from map import map
+from map import Map
 import numpy as np
 import random
 from queue import Queue
+from game import Game
 
 '''
     DO NOT RUN THIS FILE WITH ANACONDA ENVIRONMENT.
@@ -79,13 +80,15 @@ class App(tk.CTk):
         Application, responsible for managing main grids, components
         and button onClick
     '''
-    def __init__(self, map_cols = 16, map_rows = 16):
+    def __init__(self, game, map_cols = 16, map_rows = 16):
         super().__init__()
 
         self.map_cols = map_cols
         self.map_rows = map_rows
 
         self.title("Treasure Island")
+        
+        self.game = game
 
         # Display map
         self.map_display = MapDisplay(self, cols=self.map_cols, rows=self.map_rows)
@@ -103,7 +106,7 @@ class App(tk.CTk):
 
     def draw_map(self):
         self.map_display.display()  # Display map
-        self.map_display.create_agent() # Randomize init position of agent, for testing
+        # self.map_display.create_agent() # Randomize init position of agent, for testing
     
     def draw_side_information(self):
         self.side_information.draw_log() # Display Logs
@@ -111,23 +114,25 @@ class App(tk.CTk):
 
     # Button to move onto the next state 
     def next_turn(self, log_content="", note_content=""):
-
+        self.game.next_turn()
         # For testing
         self.count += 1
-        if log_content == "":
-            self.side_information.log_display.insert_log(f" Log content {self.count}")
-            self.side_information.note_display.insert_note(f"Note content {self.count}")
-        else:
-            self.side_information.log_display.insert_log(log_content)
-            self.side_information.note_display.insert_note(note_content)
+
+        log_content = self.game.log()
+
+        self.side_information.log_display.insert_log(log_content)
+        # self.side_information.note_display.insert_note(note_content)
+        self.side_information.note_display.insert_note(f"Note content {self.count}")
+
+        agent_pos = self.game.get_agent_pos()
             
-        self.map_display.move_agent()
+        self.map_display.move_agent(agent_pos[1], agent_pos[0])
 
         if self.count % 2 == 0:
             self.map_display.show_hints(tiles_hint)
         else: self.map_display.show_hints(tiles_hint2)
 
-        self.map_display.display_no_treasure(tiles_no_treasure)
+        # self.map_display.display_no_treasure(tiles_no_treasure)
 
 class SideInformation(tk.CTkFrame):
     '''
@@ -213,20 +218,20 @@ class MapDisplay(tk.CTkFrame):
     
     # Randomize the position of agent FOR TESTING
     def move_agent(self, x_des = 5, y_des = 5):
-        height, width = map.get_map_shape()
-        while True:
-            x_des, y_des = random.randint(2, width - 2), random.randint(2, height - 2)
-            tile_type_des = map.tile_type(x_des, y_des)
-            if (tile_type_des != "M" and map.map[y_des, x_des] != 0):
-                self.agent.move_agent(x_des, y_des)
-                self.agent_pos.put(self.map.create_text((x_des+0.5)*self.cell_width, 
-                                        (y_des+0.5)*self.cell_height, 
-                                        text='A', 
-                                        anchor="center",
-                                        font=("Roboto bold", self.cell_font_size),
-                                        fill="orange red"))
-                self.map.delete(self.agent_pos.get())
-                break         
+        # height, width = map.get_map_shape()
+        # while True:
+        #     x_des, y_des = random.randint(2, width - 2), random.randint(2, height - 2)
+        #     tile_type_des = map.tile_type(x_des, y_des)
+        #     if (tile_type_des != "M" and map.map[y_des, x_des] != 0):
+        #         self.agent.move_agent(x_des, y_des)
+        self.agent_pos.put(self.map.create_text((x_des+0.5)*self.cell_width, 
+                                (y_des+0.5)*self.cell_height, 
+                                text='A', 
+                                anchor="center",
+                                font=("Roboto bold", self.cell_font_size),
+                                fill="orange red"))
+        self.map.delete(self.agent_pos.get())
+                # break         
           
     # Display the hint tiles as cell with red borders.
     def show_hints(self, hint_tiles):
@@ -318,9 +323,9 @@ class LogDisplay(tk.CTkFrame):
                                  font=("Roboto", 21))
         self.text.grid(row=1, column=0, padx=20, pady=10)
 
-    def insert_log(self, content="Game start"):
+    def insert_log(self, content="> Game start"):
         self.text.configure(state="normal") # Set log to read and write
-        self.text.insert(tk.END, f"> {content}\n")
+        self.text.insert(tk.END, f"{content}\n")
         self.text.configure(state="disabled") # Set log to read-only 
 
 class RegionDisplay(tk.CTkFrame):
@@ -392,8 +397,15 @@ class NoteDisplay(tk.CTkFrame):
         self.label.configure(text = f"{content}")
 
 if __name__ == "__main__":
+    # map = Map(16, 16)
+    # map.generate_map()
+
+    game = Game(16, 16)
+    map = game.map_manager
+    map.generate_map()
     (width, height) = map.get_map_shape()
-    app = App(map_cols=width, map_rows=height)
+
+    app = App(game=game, map_cols=width, map_rows=height)
 
     sv_ttk.set_theme("dark")    # Set theme
 

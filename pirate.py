@@ -8,7 +8,7 @@ class Pirate:
         This class manage the behavior of pirate
     '''
 
-    def __init__(self, initial_pos, treasure_pos):
+    def __init__(self, map, treasure_pos, initial_pos=None):
         # A queue of cells, which is the shortest path to treasure, an element contains (pos, log) where
         # pos is an numpy array representing the coordinate of the next move
         # log is the log of the next move
@@ -16,11 +16,14 @@ class Pirate:
         self.visited = None  # A numpy array of visited cells
         self.initial_pos = initial_pos
         self.cur_pos = initial_pos
-        self.hint_manager = HintManager()
+        self.hint_manager = HintManager(map)
         self.treasure_pos = treasure_pos
 
-        self.find_shortest_path()
+        # self.find_shortest_path()
 
+    def set_pos(self, pos):
+        self.cur_pos = pos
+        
     def reach_treasure(self):
         return np.array_equal(self.cur_pos, self.treasure_pos)
 

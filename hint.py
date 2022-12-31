@@ -58,6 +58,7 @@ class HintManager:
         self.pirate_pos = pirate_pos
 
         hint_type = random.choices(range(1, 16), weights=hint_weights, k=1)[0]
+        truth_val = False
 
         while not truth_val:
             if (hint_type == 1):
@@ -227,7 +228,7 @@ class HintManager:
         '''
         width, height = self.map.get_map_shape()
         # Option: 0 - only column, 1 - only row, 2 - both
-        choice = random.choice([0, 1, 2], p=[0.45, 0.45, 0.1], size=1)[0]
+        choice = np.random.choice([0, 1, 2], p=[0.45, 0.45, 0.1], size=1)[0]
         c, r = None, None
         log = ''
         truth = False
@@ -255,7 +256,7 @@ class HintManager:
         A column and/or a row that do not contain the treasure.
         '''
         width, height = self.map.get_map_shape()
-        choice = random.choice([0, 1, 2], p=[0.45, 0.45, 0.1], size=1)[0]
+        choice = np.random.choice([0, 1, 2], p=[0.45, 0.45, 0.1], size=1)[0]
         c = r = None
         truth = False
         if choice == 0:
@@ -300,7 +301,7 @@ class HintManager:
         The treasure is somewhere in a boundary of 2 regions
         '''
         log = 'The treasure is somewhere in a boundary of 2 regions'
-        truth = self.map.check_on_boundary()
+        truth = self.map.check_on_all_boundaries()
         return 10, log, truth, None
 
     def gen_11th_type(self):

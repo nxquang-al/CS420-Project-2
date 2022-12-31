@@ -39,17 +39,17 @@ class Map:
         return np.where(self.map == region_idx, 1, 0)
 
     def is_mountain(self, pos):
-        pos = np.asarray(pos)
-        return any(np.array_equal(pos, mountain) for mountain in self.mountains)
+        # pos = np.asarray(pos)
+        # return any(np.array_equal(pos, mountain) for mountain in self.mountains)
+        return any([pos in mountain for mountain in self.mountains])
 
     def is_sea(self, pos):
         return self.map[pos] == 0
 
     def tile_type(self, y, x):
         if x > 0 and x < self.height and y > 0 and y < self.height:
-            for mountain in self.mountains:
-                if (x, y) in mountain:
-                    return 'M'
+            if self.is_mountain((x, y)) is True:
+                return 'M'
             if (x, y) in self.prisons:
                 return 'P'
             elif (x, y) == self.treasure_pos:
@@ -299,7 +299,8 @@ class Map:
                 [array([r1, r2]), array[r3, r4],...]
 
         '''
-        num_regions = int(self.map.max())
+        # num_regions = int(self.map.max())
+        num_regions = self.num_regions
         temp = np.zeros((num_regions+1, num_regions+1), dtype=bool)
 
         self.map = self.map.astype(int)
@@ -527,7 +528,7 @@ class Map:
     def get_mountain_region(self):
         # get the list of regions which have mountain
         return np.unique(self.map[self.mountains[:, 0], self.mountains[:, 1]])
-
+        
     def check_region(self, list_regions):
         region_tiles = None
         for region in list_regions:
