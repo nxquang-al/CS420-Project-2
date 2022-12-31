@@ -303,7 +303,7 @@ class Agent:
             # if pirate is free at this turn, agent tele to the position of pirate
             if can_tele:
                 return (0, 4, pirate_cur_pos)
-            # pirate is not
+            # pirate has not moved yet
             if pirate_cur_pos == pirate_prev_pos:
                 # large scan
                 return (0, 3, (0, 0))

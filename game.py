@@ -145,7 +145,7 @@ class Game:
                     if next_action[1] == 0:
                         # Verification
                         (idx, turn, _, mask) = next_action[2]
-                        truth = self.truth_list[turn]
+                        truth = self.truth_list[turn-1]
                         self.agent.verify(idx, truth, mask)
                         step += 1
 
