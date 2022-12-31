@@ -9,8 +9,8 @@ class Agent:
     def __init__(self, game_manager: Game, initial_pos: tuple):
         self.game_manager = game_manager
         self.map_manager = game_manager.map_manager
-        self.knowledge_map = np.empty(
-            (game_manager.width, game_manager.height))
+        self.knowledge_map = np.ones(
+            (game_manager.width, game_manager.height), dtype=bool)
         self.cur_pos = initial_pos
         self.hints = []
 
