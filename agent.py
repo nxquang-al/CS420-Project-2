@@ -1,21 +1,22 @@
 import numpy as np
 from queue import Queue
-from game import Game
+# from game import Game
 from scipy.sparse import coo_matrix
 import heapq
 
 
 class Agent:
-    def __init__(self, game_manager: Game, initial_pos: tuple):
+    def __init__(self, game_manager, initial_pos: tuple):
         self.game_manager = game_manager
         self.map_manager = game_manager.map_manager
         self.knowledge_map = np.ones(
-            (game_manager.width, game_manager.height), dtype=bool)
-        self.cur_pos = initial_pos
+            (game_manager.WIDTH , game_manager.HEIGHT), dtype=bool)
+        self.cur_pos = list(initial_pos)
+        # (idx, hint_type, data)
         self.hints = []
 
-        self.width = self.game_manager.width
-        self.height = self.game_manager.height
+        self.width = self.game_manager.WIDTH
+        self.height = self.game_manager.HEIGHT
 
         self.path = None
 
@@ -143,7 +144,7 @@ class Agent:
             outer_rec, inner_rec = hint[2]
             col_0, row_0, col_1, row_1 = outer_rec
             col_2, row_2, col_3, row_3 = inner_rec
-            binary_mask = self.zeros((self.width, self.height), dtype=bool)
+            binary_mask = np.zeros((self.width, self.height), dtype=bool)
             binary_mask[col_0:(col_1+1), row_0:(row_1+1)] = True       # outer
             binary_mask[col_2:(col_3+1), row_2:(row_3+1)] = False      # inner
 
@@ -200,6 +201,8 @@ class Agent:
 
         # Estimate verify action
         for i in range(len(self.hints)):
+            if self.hints[i][1] == 6:
+                continue
             turn, hint_type, binary_mask = self.refactor_hint_data(i)
             temp = np.logical_and(binary_mask, self.knowledge_map)
             count = np.count_nonzero(temp)

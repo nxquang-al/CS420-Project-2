@@ -6,6 +6,7 @@ from map import Map
 import numpy as np
 import random
 from queue import Queue
+from game import Game
 
 '''
     DO NOT RUN THIS FILE WITH ANACONDA ENVIRONMENT.
@@ -85,13 +86,15 @@ class App(tk.CTk):
         and button onClick
     '''
 
-    def __init__(self, map_cols=16, map_rows=16):
+    def __init__(self, game, map_cols=16, map_rows=16):
         super().__init__()
 
         self.map_cols = map_cols
         self.map_rows = map_rows
 
         self.title("Treasure Island")
+
+        self.game = game
 
         # Display map
         self.map_display = MapDisplay(
@@ -119,7 +122,7 @@ class App(tk.CTk):
 
     # Button to move onto the next state
     def next_turn(self, log_content="", note_content=""):
-
+        self.game.next_turn()
         # For testing
         self.count += 1
         if log_content == "":
@@ -138,7 +141,7 @@ class App(tk.CTk):
         else:
             self.map_display.show_hints(tiles_hint2)
 
-        self.map_display.display_no_treasure(tiles_no_treasure)
+        # self.map_display.display_no_treasure(tiles_no_treasure)
 
 
 class SideInformation(tk.CTkFrame):
@@ -235,7 +238,8 @@ class MapDisplay(tk.CTkFrame):
                 break
 
     # Randomize the position of agent FOR TESTING
-    def move_agent(self, x_des=5, y_des=5):
+<< << << < HEAD
+   def move_agent(self, x_des=5, y_des=5):
         height, width = map.get_map_shape()
         while True:
             x_des, y_des = random.randint(
@@ -356,10 +360,10 @@ class LogDisplay(tk.CTkFrame):
                                   font=("Roboto", 21))
         self.text.grid(row=1, column=0, padx=20, pady=10)
 
-    def insert_log(self, content="Game start"):
+    def insert_log(self, content="> Game start"):
         self.text.configure(state="normal")  # Set log to read and write
-        self.text.insert(tk.END, f"> {content}\n")
-        self.text.configure(state="disabled")  # Set log to read-only
+        self.text.insert(tk.END, f"{content}\n")
+        self.text.configure(state="disabled") # Set log to read-only
 
 
 class RegionDisplay(tk.CTkFrame):
@@ -441,8 +445,15 @@ class NoteDisplay(tk.CTkFrame):
 
 
 if __name__ == "__main__":
+    # map = Map(16, 16)
+    # map.generate_map()
+
+    game = Game(16, 16)
+    map = game.map_manager
+    map.generate_map()
     (width, height) = map.get_map_shape()
-    app = App(map_cols=width, map_rows=height)
+
+    app = App(game=game, map_cols=width, map_rows=height)
 
     sv_ttk.set_theme("dark")    # Set theme
 

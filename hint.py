@@ -58,6 +58,7 @@ class HintManager:
         self.pirate_pos = pirate_pos
 
         hint_type = random.choices(range(1, 16), weights=hint_weights, k=1)[0]
+        truth_val = False
 
         truth_val = False
         while not truth_val:
@@ -257,6 +258,7 @@ class HintManager:
         '''
         width, height = self.map.get_map_shape()
         choice = random.choice([0, 1, 2], weights=[0.45, 0.45, 0.1], size=1)[0]
+
         c = r = None
         truth = False
         if choice == 0:
@@ -301,7 +303,7 @@ class HintManager:
         The treasure is somewhere in a boundary of 2 regions
         '''
         log = 'The treasure is somewhere in a boundary of 2 regions'
-        truth = self.map.check_on_boundary()
+        truth = self.map.check_on_all_boundaries()
         return 10, log, truth, None
 
     def gen_11th_type(self):
