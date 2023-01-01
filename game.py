@@ -122,7 +122,9 @@ class Game:
                 hint_type, log, truth, data = self.hint_manager.generate(
                     self.agent.cur_pos, self.pirate.cur_pos, self.hint_weights)
             self.truth_list.append(truth)
-            self.agent.add_hint(self.turn_idx, hint_type, data)
+            array_of_tiles, binary_mask = self.agent.refactor_hint(
+                hint_type, data)
+            self.agent.add_hint(self.turn_idx, hint_type, binary_mask)
 
             self.logs.put('HINT {}: {}'.format(self.turn_idx, log))
             self.logs.put(f"ADD HINT {self.turn_idx} TO HINT LIST")
@@ -172,7 +174,7 @@ class Game:
                                                         self.pirate.cur_pos, self.pirate_prev_pos)
                     if next_action[1] == 0:
                         # Verification
-                        (idx, turn, _, mask) = next_action[2]
+                        (idx, turn, mask) = next_action[2]
                         truth = self.truth_list[turn-1]
                         self.agent.verify(idx, truth, mask)
                         step += 1

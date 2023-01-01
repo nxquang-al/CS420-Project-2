@@ -363,7 +363,7 @@ class HintManager:
             log = 'The bottom half of the map does not contains treasure'
 
         truth = self.map.check_rectangle_region(top_left, bot_right)
-        return 12, log, truth, np.array([top_left, bot_right])
+        return 12, log, (not truth), np.array([top_left, bot_right])
 
     def gen_13th_type(self, pos):
         '''

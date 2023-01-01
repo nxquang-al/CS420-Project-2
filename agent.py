@@ -73,94 +73,102 @@ class Agent:
         '''
         self.hints.append((idx, hint_type, data))
 
-    def refactor_hint_data(self, hint_idx):
-        hint = self.hints[hint_idx]
-        if hint[1] == 1:
+    def refactor_hint(self, hint_type, data):
+        array_of_tiles = None
+        if hint_type == 1:
             # Hint type 1, data is an array of tiles do not contain treasure
-            binary_mask = arrayTiles_to_binaryMask(hint[2], flip=True)
+            binary_mask = arrayTiles_to_binaryMask(data, flip=True)
 
-        elif hint[1] in [2, 15]:
+        elif hint_type in [2, 15]:
             # Hint type 2 and 15, data is list of regions
-            binary_mask = np.isin(self.map_manager.map, hint[2])
+            binary_mask = np.isin(self.map_manager.map, data)
 
-        elif hint[1] == 3:
+        elif hint_type == 3:
             # Hint type 3, data is list regions, which do not contain treasure
-            binary_mask = np.logical_not(
-                np.isin(self.map_manager.map, hint[2]))
+            binary_mask = np.logical_not(np.isin(self.map_manager.map, data))
 
-        elif hint[1] == 4:
-            # Hint type 4, data is a rectangle contains treasure noted by top_left and bot_right
-            binary_mask = arrayTiles_to_binaryMask(hint[2], flip=False)
+        elif hint_type == 4:
+            # Hint type 4, data is an array of tiles
+            binary_mask = arrayTiles_to_binaryMask(data, flip=False)
 
-        elif hint[1] == 5:
+        elif hint_type == 5:
             # Hint type 5, data is a rectangle does not contain treasure
-            binary_mask = arrayTiles_to_binaryMask(hint[2], flip=True)
+            binary_mask = arrayTiles_to_binaryMask(data, flip=True)
 
-        elif hint[1] == 7:
+        elif hint_type == 7:
             # Hint type 7, data is column or/and row contain treasure
-            col, row = hint[2]
+            col, row = data
             binary_mask = np.zeros((self.width, self.height), dtype=bool)
             if col:
                 binary_mask[col,] = 1
             if row:
                 binary_mask[:, row] = 1
 
-        elif hint[1] == 8:
+        elif hint_type == 8:
             # Hint type 8, data is column/row do not contain treasure
-            col, row = hint[2]
+            col, row = data
             binary_mask = np.ones((self.width, self.height), dtype=bool)
             if col:
                 binary_mask[col,] = 0
             if row:
                 binary_mask[:, row] = 0
 
-        elif hint[1] == 9:
+        elif hint_type == 9:
             # Hint type 9, data is indices of 2 regions
-            rid_1, rid_2 = hint[2]
+            rid_1, rid_2 = data
             bound_1, bound_2 = self.map_manager.get_two_regions_boundary(
                 rid_1, rid_2)
-            boundary = np.concatenate((bound_1, bound_2), axis=0)
-            binary_mask = arrayTiles_to_binaryMask(boundary, flip=False)
+            array_of_tiles = np.concatenate((bound_1, bound_2), axis=0)
+            binary_mask = arrayTiles_to_binaryMask(array_of_tiles, flip=False)
 
-        elif hint[1] == 10:
+        elif hint_type == 10:
             # Hint type 10, data is None
-            _, binary_mask = self.map_manager.get_all_boundaries()
+            array_of_tiles, binary_mask = self.map_manager.get_all_boundaries()
 
-        elif hint[1] == 11:
+        elif hint_type == 11:
             # Hint type 11, data is a binary map represents tiles with distance from sea
-            binary_mask = hint[2]
+            binary_mask = data
 
-        elif hint[1] == 12:
+        elif hint_type == 12:
             # Hint type 12, data is a rectangle noted by top_left and bot_right
-            top_left, bot_right = hint[2]
-            binary_mask = np.zeros((self.width, self.height), dtype=bool)
+            top_left, bot_right = data
+            binary_mask = np.ones((self.width, self.height), dtype=bool)
             binary_mask[top_left[0]:bot_right[0],
-                        top_left[1]:bot_right[1]] = True
+                        top_left[1]:bot_right[1]] = False
 
-        elif hint[1] == 13:
-            binary_mask = hint[2]
+        elif hint_type == 13:
+            binary_mask = data
 
-        elif hint[1] == 14:
-            outer_rec, inner_rec = hint[2]
+        elif hint_type == 14:
+            outer_rec, inner_rec = data
             col_0, row_0, col_1, row_1 = outer_rec
             col_2, row_2, col_3, row_3 = inner_rec
             binary_mask = np.zeros((self.width, self.height), dtype=bool)
             binary_mask[col_0:(col_1+1), row_0:(row_1+1)] = True       # outer
             binary_mask[col_2:(col_3+1), row_2:(row_3+1)] = False      # inner
 
-        # truth = self.game_manager.get_hint_truth(hint[0])
-        # if truth:
-        #     self.update_knowledge(binary_mask)
-        # else:
-        #     self.update_knowledge(np.logical_not(binary_mask))
-        # if not truth:
-        #     binary_mask = np.logical_not(binary_mask)
+        if hint_type in [1, 4, 5]:
+            array_of_tiles = data
+        elif hint_type in [2, 7, 11, 13, 14, 15]:
+            x, y = np.where(binary_mask == 1)
+            array_of_tiles = np.vstack((x, y)).T
+        elif hint_type in [3, 8, 12]:
+            x, y = np.where(binary_mask == 0)
+            array_of_tiles = np.vstack((x, y)).T
 
-        # temp = np.logical_xor(binary_mask, self.knowledge_map)
-        # binary_mask = np.logical_and(binary_mask, temp)
-        # count = np.where(binary_mask==1)   # The number of new tiles scanned that hint can provide
+            # truth = self.game_manager.get_hint_truth(hint[0])
+            # if truth:
+            #     self.update_knowledge(binary_mask)
+            # else:
+            #     self.update_knowledge(np.logical_not(binary_mask))
+            # if not truth:
+            #     binary_mask = np.logical_not(binary_mask)
 
-        return hint[0], hint[1], binary_mask  # turn_idx, hint_type, mask
+            # temp = np.logical_xor(binary_mask, self.knowledge_map)
+            # binary_mask = np.logical_and(binary_mask, temp)
+            # count = np.where(binary_mask==1)   # The number of new tiles scanned that hint can provide
+
+        return array_of_tiles, binary_mask  # turn_idx, hint_type, mask
 
     def verify(self, index, truth, mask):
         if truth:
@@ -203,11 +211,12 @@ class Agent:
         for i in range(len(self.hints)):
             if self.hints[i][1] == 6:
                 continue
-            turn, hint_type, binary_mask = self.refactor_hint_data(i)
+            turn, hint_type, binary_mask = self.hints[i]
+            # turn, hint_type, binary_mask = self.refactor_hint_data(i)
             temp = np.logical_and(binary_mask, self.knowledge_map)
             count = np.count_nonzero(temp)
             heapq.heappush(
-                actions, (count, 0, (i, turn, hint_type, binary_mask)))
+                actions, (count, 0, (i, turn, binary_mask)))
 
         # Estimate stay & 5x5 scan
         heuristic = self.cal_heuristic(self.cur_pos, size=5)
