@@ -22,8 +22,9 @@ class Map:
         # Numpy array of prisons array([p1, p2, p3,...])
         self.prisons = None
 
-        self.input_region = random.randint(5, min(self.width, 7)) # including sea
-        self.num_regions = self.input_region - 1 # number of lands
+        self.input_region = random.randint(
+            5, min(self.width, 7))  # including sea
+        self.num_regions = self.input_region - 1  # number of lands
 
         # List of numpy array of adjacent regions
         self.adjacent_list = None
@@ -157,10 +158,6 @@ class Map:
                             self.map[new_x, new_y] = region
                             current_size += 1
 
-        # Get list of neighbors for each regions
-        self.adjacent_list = self.get_neighbors()
-        print('Adjacent list: {}'.format(self.adjacent_list))
-
         # Randomize the number of mountains
         self.num_mountain = random.randint(5, max(round(self.width/4), 5))
 
@@ -262,6 +259,10 @@ class Map:
                 else:
                     break
 
+        # Get list of neighbors for each regions
+        self.adjacent_list = self.get_neighbors()
+        print('Adjacent list: {}'.format(self.adjacent_list))
+
         # Initialize the output map
         output_map = np.empty((self.width, self.height), dtype='object')
 
@@ -285,8 +286,6 @@ class Map:
         print(f"Mountains: {self.mountains}")
         print(f"Prisons: {self.prisons}")
         print(f"Treasure: {self.treasure_pos}")
-        print(output_map)
-        print(self.map)
         # Return the output map
         return output_map
 
@@ -309,7 +308,6 @@ class Map:
         temp = np.zeros((num_regions+1, num_regions+1), dtype=bool)
 
         self.map = self.map.astype(int)
-        print(self.map)
 
         # Check vertical adjacency
         a, b = self.map[:-1, :], self.map[1:, :]
@@ -358,7 +356,7 @@ class Map:
         Given 2 regions index, find their border
         '''
         # check if 2 regions are adjacent
-        if rid_2 not in self.adjacent_list[rid_1]:
+        if rid_2 not in self.adjacent_list[rid_1-1]:
             return None
 
         r1_boundary, _ = self.get_region_boundary(rid_1)

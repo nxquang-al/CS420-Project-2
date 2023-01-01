@@ -36,7 +36,7 @@ class Game:
         self.hint_tiles = Queue()
 
         self.hint_weights = np.array(
-            [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 1])
+            [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 0, 0.5, 1])
 
         self.turn_idx = 0
         self.can_tele = True
@@ -92,34 +92,23 @@ class Game:
         while not self.hint_tiles.empty():
             hint_tiles.append(self.hint_tiles.get())
 
-        print(f"Hint: {hint_tiles}")
+        # print(f"Hint: {hint_tiles}")
         return hint_tiles
 
     def visualize(self):
         return
-
-    def generate_turn(self, turn_idx):
-        self.logs.put('START TURN {}'.format(turn_idx))
-        if turn_idx == 1:
-            hint_type, log, truth, data = self.hint_manager.gen_first_hint()
-        else:
-            hint_type, log, truth, data = self.hint_manager.generate()
-        self.truth_list.append(truth)
-        self.agent.add_hint(turn_idx, hint_type, data)
-
-        self.logs.put('HINT {}: {}'.format(turn_idx, log))
-        self.logs.put(f"ADD HINT {self.turn_idx} TO HINT LIST")
-        if turn_idx == 1:
-            self.logs.put('HINT 1: is_verified = TRUE, is_truth = TRUE')
 
     def get_hint_truth(self, hint_idx):
         return self.truth_list[hint_idx]
 
     def next_turn(self):
         # Init pirate pos here because it must be after the init of map (and prison)
+        # print('Pirate cur pos: {}'.format(self.pirate.cur_pos))
         if self.pirate.cur_pos is None:
+            print("pirate set_pos")
             self.pirate.set_pos(self.map_manager.prisons[random.randint(
                 0, self.map_manager.num_prisons - 1)])
+            self.pirate_prev_pos = self.pirate.cur_pos
 
         if not self.is_win:
             self.turn_idx += 1
@@ -127,10 +116,12 @@ class Game:
 
             if self.turn_idx == self.prison_revealTurn:
                 self.logs.put(
-                    "The location of pirate is {}".format(self.pirate.cur_pos))
+                    "The Pirate is at the prison {}".format(self.pirate.cur_pos))
+                self.hint_weights = np.array(
+                    [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 1])
 
             if self.turn_idx == self.pirate_freeTurn:
-                self.logs.put("The pirate has been freed")
+                self.logs.put("The pirate is free")
                 self.pirate_isFree = True
 
             if self.turn_idx == 1:
@@ -178,7 +169,7 @@ class Game:
                     if cal_manhattan_distance(self.agent.cur_pos, next_pos) <= 2:
                         # Small move
                         self.logs.put(
-                            f"Agent moves from {self.agent.cur_pos} to tile {next_pos} and takes a small scan")
+                            'Agent moves from {} to tile {} and takes a small scan'.format(self.agent.cur_pos, next_pos))
                         self.agent.update_pos(next_pos)
                         self.is_win = self.agent.small_scan()
                     else:
@@ -191,6 +182,8 @@ class Game:
                 else:
                     # Treasure position is unknown
                     # Get action of the turn
+                    # print("Pirate_cur_pos: ".format(self.pirate.cur_pos))
+                    # print("Pirate_prev_pos: ".format(self.pirate_prev_pos))
                     next_action = self.agent.get_action(self.pirate_isFree, self.can_tele,
                                                         self.pirate.cur_pos, self.pirate_prev_pos)
                     if next_action[1] == 0:
@@ -201,11 +194,16 @@ class Game:
                         self.logs.put(
                             f"Agent has verified the hint, it is {self.truth_list[self.turn_idx]}!!")
                         step += 1
+                        self.logs.put(
+                            'HINT {}: is_verified = TRUE, is_truth = {}'.format(turn, truth))
 
                     elif next_action[1] == 1:
                         # Move 1-2 tiles and small scan
                         next_move = next_action[2]
+                        prev_pos = self.agent.cur_pos
                         self.agent.move(next_move)
+                        self.logs.put('Agent moves a small steps from {} to {} and takes a small scan'.format(
+                            prev_pos, self.agent.cur_pos))
                         has_treasure = self.agent.small_scan()
                         self.logs.put(
                             f"Agent moves from {self.agent.cur_pos} to tile {next_move} and takes a small scan")
@@ -217,16 +215,16 @@ class Game:
                     elif next_action[1] == 2:
                         # Move 3-4 tiles
                         next_move = next_action[2]
+                        prev_pos = self.agent.cur_pos
                         self.agent.move(next_move)
-                        self.logs.put(
-                            f"Agent moves from {self.agent.cur_pos} to tile {next_move}")
+                        self.logs.put('Agent moves a large steps from {} to {}'.format(
+                            prev_pos, self.agent.cur_pos))
                         step += 1
 
                     elif next_action[1] == 3:
                         # Large scan 5x5
                         has_treasure = self.agent.large_scan()
-                        self.logs.put(
-                            f"Agent takes a large scan")
+                        self.logs.put('Agent takes a large scan')
                         if has_treasure:
                             self.logs.put('WIN')
                             self.is_win = True
@@ -239,6 +237,8 @@ class Game:
                         self.logs.put(
                             f"Agent teleport from {self.agent.cur_pos} to tile {pos}")
                         self.can_tele = False
+                        self.logs.put(
+                            "Agent teleports to tiles {}".format(pos))
                         # this action is not counted as a step
 
                     if np.count_nonzero(self.agent.knowledge_map) == 1:
@@ -249,9 +249,12 @@ class Game:
                         self.agent.path.pop(0)
 
             if self.turn_idx >= self.pirate_freeTurn:
+                print('Pirate cur pos: {}'.format(self.pirate.cur_pos))
+                print('Pirate prev pos: {}'.format(self.pirate_prev_pos))
                 self.pirate_prev_pos = self.pirate.cur_pos
-                (move, log) = self.pirate.path.get()
-                self.logs.put(log)
+                if not self.pirate.path.empty():
+                    (move, log) = self.pirate.path.get()
+                    self.logs.put(log)
 
             if self.pirate.reach_treasure():
                 self.logs.put('LOSE')
@@ -394,90 +397,3 @@ class Game:
         #     if self.pirate.reach_treasure():
         #         self.logs.append('LOSE')
         #         break
-
-
-# if known_treasure:
-        #     is_win = False
-        #     if self.can_tele:
-        #         # if tele is still available, agent tele to the treasure and takes a large scan
-        #         self.can_tele = False
-        #         self.agent.teleport(self.map_manager.treasure_pos)
-        #         self.logs.append(
-        #             'Agent teleport to position: {}'.format(self.agent.cur_pos))
-        #         is_win = self.agent.large_scan()
-        #         self.logs.append(
-        #             'Agent takes a large scan at {}'.format(self.agent.cur_pos))
-
-        #     step = 0
-        #     while step < 2 and not is_win and len(self.agent.path):
-        #         next_pos = self.agent.path.pop(0)
-        #         if cal_manhattan_distance(self.agent.cur_pos, next_pos) <= 2:
-        #             # Small move
-        #             self.logs.append(
-        #                 'Agent moves from {self.agent.cur_pos} to tile {next_pos} and takes a small scan')
-        #             self.agent.update_pos(next_pos)
-        #             is_win = self.agent.small_scan()
-        #         else:
-        #             # Large move
-        #             self.logs.append(
-        #                 'Agent moves from {self.agent.cur_pos} to tile {new_pos}')
-        #             self.agent.update_pos(next_pos)
-        #         step += 1
-        #     if len(self.agent.path) == 0 and not is_win and step < 2:
-        #         self.logs.append(
-        #             'Agent takes a large scan at {}'.format(self.agent.cur_pos))
-        #         is_win = True
-        #     if is_win:
-        #         self.logs.append('WIN')
-        #         break
-        # else:
-        #     step = 0
-        #     is_win = False
-        #     while step < 2 and not is_win:
-        #         # Get action of the turn
-        #         next_action = self.agent.get_action(self.pirate_isFree, self.can_tele,
-        #                                             self.pirate.cur_pos, pirate_prev_pos)
-        #         if next_action[1] == 0:
-        #             # Verification
-        #             (idx, turn, _, mask) = next_action[2]
-        #             truth = self.truth_list[turn]
-        #             self.agent.verify(idx, truth, mask)
-
-        #         elif next_action[1] == 1:
-        #             # Move 1-2 tiles and small scan
-        #             move = next_action[2]
-        #             self.agent.move(move)
-        #             has_treasure = self.agent.small_scan()
-        #             if has_treasure:
-        #                 self.logs.append('WIN')
-        #                 is_win = True
-        #                 break
-
-        #         elif next_action[1] == 2:
-        #             # Move 3-4 tiles
-        #             move = next_action[2]
-        #             self.agent.move(move)
-
-        #         elif next_action[1] == 3:
-        #             # Large scan 5x5
-        #             has_treasure = self.agent.large_scan()
-        #             if has_treasure:
-        #                 self.logs.append('WIN')
-        #                 is_win = True
-        #                 break
-
-        #         elif next_action[1] == 4:
-        #             # Teleport
-        #             pos = next_action[2]
-        #             self.agent.teleport(pos)
-        #             self.can_tele = False
-        #             continue    # this action is not counted as a step
-
-        #         step += 1
-
-        #         if np.count_nonzero(self.agent.knowledge_map) == 1:
-        #             # If there is only 1 tile available, it's the treasure
-        #             known_treasure = True
-        #             self.agent.bfs_fastest_path()
-        #             # pop the current position of agent
-        #             self.agent.path.pop(0)
