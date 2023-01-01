@@ -182,6 +182,7 @@ class Agent:
         self.hints.pop(index)
 
     def update_knowledge(self, mask):
+        print(self.knowledge_map.astype(int).T)
         assert mask.shape == self.knowledge_map.shape
         self.knowledge_map = np.logical_and(self.knowledge_map, mask)
         return self.knowledge_map

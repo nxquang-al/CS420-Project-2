@@ -290,10 +290,6 @@ class HintManager:
         rid_1 = random.randint(1, self.map.num_regions)
         # rand_idx = np.random.choice(
         #     self.map.adjacent_list[rid_1-1].shape[0], size=1, replace=False)[0]
-        print('====')
-        print('Region 1: {}'.format(rid_1))
-        print(self.map.adjacent_list[rid_1-1])
-        print('====')
         rid_2 = random.choice(self.map.adjacent_list[rid_1-1])
 
         # rid_2 = self.map.adjacent_list[rid_1-1][rand_idx]
@@ -319,11 +315,7 @@ class HintManager:
         num_tiles = random.randint(2, 3)
         log = 'The treasure is somewhere in an area bounded by {num_tiles} tiles from sea'
 
-        sea = np.where(self.map == 0, True, False)
-        print('=====')
-        # print(self.map)
-        print(sea)
-        print('=====')
+        sea = np.where(self.map.map == 0, True, False)
         not_sea = np.logical_not(sea)
         binary_mask = np.zeros(self.map.get_map_shape(), bool)
 

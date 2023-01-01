@@ -288,8 +288,6 @@ class Map:
         print(f"Mountains: {self.mountains}")
         print(f"Prisons: {self.prisons}")
         print(f"Treasure: {self.treasure_pos}")
-        print(output_map)
-        print(self.map)
         # Return the output map
         return output_map
 
@@ -312,7 +310,6 @@ class Map:
         temp = np.zeros((num_regions+1, num_regions+1), dtype=bool)
 
         self.map = self.map.astype(int)
-        print(self.map)
 
         # Check vertical adjacency
         a, b = self.map[:-1, :], self.map[1:, :]
@@ -361,7 +358,7 @@ class Map:
         Given 2 regions index, find their border
         '''
         # check if 2 regions are adjacent
-        if rid_2 not in self.adjacent_list[rid_1]:
+        if rid_2 not in self.adjacent_list[rid_1-1]:
             return None
 
         r1_boundary, _ = self.get_region_boundary(rid_1)
