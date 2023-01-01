@@ -160,18 +160,6 @@ class Agent:
             x, y = np.where(binary_mask == 0)
             array_of_tiles = np.vstack((x, y)).T
 
-            # truth = self.game_manager.get_hint_truth(hint[0])
-            # if truth:
-            #     self.update_knowledge(binary_mask)
-            # else:
-            #     self.update_knowledge(np.logical_not(binary_mask))
-            # if not truth:
-            #     binary_mask = np.logical_not(binary_mask)
-
-            # temp = np.logical_xor(binary_mask, self.knowledge_map)
-            # binary_mask = np.logical_and(binary_mask, temp)
-            # count = np.where(binary_mask==1)   # The number of new tiles scanned that hint can provide
-
         return array_of_tiles, binary_mask  # turn_idx, hint_type, mask
 
     def verify(self, index, truth, mask):
@@ -182,9 +170,9 @@ class Agent:
         self.hints.pop(index)
 
     def update_knowledge(self, mask):
-        print(self.knowledge_map.astype(int).T)
         assert mask.shape == self.knowledge_map.shape
         self.knowledge_map = np.logical_and(self.knowledge_map, mask)
+        print(self.knowledge_map.astype(int).T)
         return self.knowledge_map
 
     def cal_heuristic(self, pos, size=3):

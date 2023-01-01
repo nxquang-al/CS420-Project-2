@@ -112,6 +112,7 @@ class Game:
 
         if not self.is_win:
             self.turn_idx += 1
+            print('TURN: {}'.format(self.turn_idx))
             self.logs.put('START TURN {}'.format(self.turn_idx))
 
             if self.turn_idx == self.prison_revealTurn:
@@ -134,7 +135,8 @@ class Game:
             array_of_tiles, binary_mask = self.agent.refactor_hint(
                 hint_type, data)
 
-            self.hint_tiles.put(array_of_tiles)
+            if array_of_tiles is not None:
+                self.hint_tiles.put(array_of_tiles)
 
             self.agent.add_hint(self.turn_idx, hint_type, binary_mask)
 
@@ -197,7 +199,7 @@ class Game:
                         truth = self.truth_list[turn-1]
                         self.agent.verify(idx, truth, mask)
                         self.logs.put(
-                            f"Agent has verified the hint, it is {self.truth_list[self.turn_idx]}!!")
+                            f"Agent has verified the hint {turn}, it is {truth}!!")
                         step += 1
                         self.logs.put(
                             'HINT {}: is_verified = TRUE, is_truth = {}'.format(turn, truth))

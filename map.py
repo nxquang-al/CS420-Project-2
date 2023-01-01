@@ -532,6 +532,9 @@ class Map:
     def get_mountain_region(self):
         # get the list of regions which have mountain
         list_regions = [self.map[idx] for idx in self.mountains]
+        print('======')
+        print('List regions having mountains: {}'.format(list_regions))
+        print('======')
         return np.unique(list_regions)
 
     def check_region(self, list_regions):
