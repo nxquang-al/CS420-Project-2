@@ -329,7 +329,7 @@ class LogDisplay(tk.CTkFrame):
 
         self.text = tk.CTkTextbox(self, width=self.log_width,
                                   height=self.log_height,
-                                  font=("Roboto", 21))
+                                  font=("Roboto", 19))
         self.text.grid(row=1, column=0, padx=20, pady=10)
 
     def insert_log(self, content="> Game start"):

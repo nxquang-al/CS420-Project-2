@@ -205,8 +205,6 @@ class Game:
                         self.logs.put('Agent moves a small steps from {} to {} and takes a small scan'.format(
                             prev_pos, self.agent.cur_pos))
                         has_treasure = self.agent.small_scan()
-                        self.logs.put(
-                            f"Agent moves from {self.agent.cur_pos} to tile {next_move} and takes a small scan")
                         if has_treasure:
                             self.logs.put('WIN')
                             self.is_win = True
@@ -234,8 +232,6 @@ class Game:
                         # Teleport
                         pos = next_action[2]
                         self.agent.teleport(pos)
-                        self.logs.put(
-                            f"Agent teleport from {self.agent.cur_pos} to tile {pos}")
                         self.can_tele = False
                         self.logs.put(
                             "Agent teleports to tiles {}".format(pos))
