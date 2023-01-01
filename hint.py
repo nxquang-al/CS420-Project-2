@@ -10,7 +10,7 @@ class HintManager:
         self.pirate_pos = None
         return
 
-    def generate(self,agent_pos, pirate_pos, hint_weights):
+    def generate(self, agent_pos, pirate_pos, hint_weights):
         '''
         Return a random hint with its truth value
         '''
@@ -60,6 +60,7 @@ class HintManager:
         hint_type = random.choices(range(1, 16), weights=hint_weights, k=1)[0]
         truth_val = False
 
+        truth_val = False
         while not truth_val:
             if (hint_type == 1):
                 hint_type, log, truth_val, data = self.gen_1st_type()
@@ -228,7 +229,7 @@ class HintManager:
         '''
         width, height = self.map.get_map_shape()
         # Option: 0 - only column, 1 - only row, 2 - both
-        choice = np.random.choice([0, 1, 2], p=[0.45, 0.45, 0.1], size=1)[0]
+        choice = random.choice([0, 1, 2], weights=[0.45, 0.45, 0.1], size=1)[0]
         c, r = None, None
         log = ''
         truth = False
@@ -256,7 +257,8 @@ class HintManager:
         A column and/or a row that do not contain the treasure.
         '''
         width, height = self.map.get_map_shape()
-        choice = np.random.choice([0, 1, 2], p=[0.45, 0.45, 0.1], size=1)[0]
+        choice = random.choice([0, 1, 2], weights=[0.45, 0.45, 0.1], size=1)[0]
+
         c = r = None
         truth = False
         if choice == 0:
@@ -284,11 +286,11 @@ class HintManager:
         '''
         2 regions that the treasure is somewhere in their boundary.
         '''
-        rid_1 = random.randint(0, self.map.num_regions-1)
+        rid_1 = random.randint(1, self.map.num_regions)
         rand_idx = np.random.choice(
-            self.map.adjacent_list[rid_1].shape[0], size=1, replace=False)[0]
+            self.map.adjacent_list[rid_1-1].shape[0], size=1, replace=False)[0]
 
-        rid_2 = self.map.adjacent_list[rid_1][rand_idx]
+        rid_2 = self.map.adjacent_list[rid_1-1][rand_idx]
 
         log = 'Treasure is somewhere in the boundary of regions {} and {}.'.format(
             rid_1, rid_2)

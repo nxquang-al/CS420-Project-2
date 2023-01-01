@@ -26,7 +26,7 @@ class Game:
         self.pirate_freeTurn = int(4+0.2*self.WIDTH)
         self.pirate_prev_pos = None
 
-        self.logs = Queue(maxsize=5)    # To be passed into LogDisplay of visualization.py
+        self.logs = Queue(maxsize=10)    # To be passed into LogDisplay of visualization.py
         self.full_logs = []             # For output.txt
 
         self.hint_weights = np.array(
@@ -169,7 +169,7 @@ class Game:
                     if next_action[1] == 0:
                         # Verification
                         (idx, turn, _, mask) = next_action[2]
-                        truth = self.truth_list[turn]
+                        truth = self.truth_list[turn-1]
                         self.agent.verify(idx, truth, mask)
                         step += 1
 
