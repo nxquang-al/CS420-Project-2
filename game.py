@@ -17,9 +17,9 @@ class Game:
         self.pirate = Pirate(map=self.map_manager,
                              treasure_pos=self.map_manager.treasure_pos)
 
-        agent_pos = (random.randint(0, self.WIDTH-4),
+        self.agent_pos = (random.randint(0, self.WIDTH-4),
                      random.randint(0, self.HEIGHT-4))
-        self.agent = Agent(game_manager=self, initial_pos=agent_pos)
+        self.agent = Agent(game_manager=self, initial_pos=self.agent_pos)
         self.known_treasure = False
 
         self.prison_revealTurn = random.randint(2, 4)
@@ -31,6 +31,7 @@ class Game:
         self.logs = Queue()
 
         self.full_logs = []             # For output.txt
+        self.hint_tiles = Queue()
 
         self.hint_weights = np.array(
             [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 1])
@@ -52,8 +53,15 @@ class Game:
     def scan_rectangle(self, top_left, bot_right):
         return self.map_manager.check_rectangle_region(top_left, bot_right)
 
-    def get_agent_pos(self):
+    def gen_agent_pos(self):
+        while True:
+            pos = (random.randint(0, self.WIDTH-4),
+                     random.randint(0, self.HEIGHT-4))
+            if self.is_movable(pos):
+                self.agent_pos = pos
+                break
 
+    def get_agent_pos(self):
         return self.agent.cur_pos
 
     def log_init(self):
@@ -76,6 +84,14 @@ class Game:
             self.full_logs.append(log)
 
         return log_content  # String
+    
+    def pass_hint_tiles(self):
+        hint_tiles = []
+        while not self.hint_tiles.empty():
+            hint_tiles.append(self.hint_tiles.get())
+
+        print(f"Hint: {hint_tiles}")
+        return hint_tiles
 
     def visualize(self):
         return
@@ -124,6 +140,9 @@ class Game:
             self.truth_list.append(truth)
             array_of_tiles, binary_mask = self.agent.refactor_hint(
                 hint_type, data)
+            
+            self.hint_tiles.put(array_of_tiles)
+
             self.agent.add_hint(self.turn_idx, hint_type, binary_mask)
 
             self.logs.put('HINT {}: {}'.format(self.turn_idx, log))
