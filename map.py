@@ -275,12 +275,9 @@ class Map:
                 # for mountain in self.mountains:
                 if (i, j) in self.mountains:
                     output_map[i, j] += 'M'
-                    break
-
                 # Check if this cell is a prison
                 if (i, j) in self.prisons:
                     output_map[i, j] += 'P'
-
                 # Check if this cell is the treasure
                 if (i, j) == self.treasure_pos:
                     output_map[i, j] += 'T'

@@ -18,8 +18,9 @@ class Game:
         self.pirate = Pirate(map=self.map_manager,
                              treasure_pos=self.map_manager.treasure_pos)
 
-        self.agent_pos = (random.randint(0, self.WIDTH-4),
-                          random.randint(0, self.HEIGHT-4))
+        x = random.randint(self.WIDTH//4, self.WIDTH//2)
+
+        self.agent_pos = (x, x)
         self.agent = Agent(game_manager=self, initial_pos=self.agent_pos)
         self.known_treasure = False
 
@@ -177,13 +178,13 @@ class Game:
                     if cal_manhattan_distance(self.agent.cur_pos, next_pos) <= 2:
                         # Small move
                         self.logs.put(
-                            'Agent moves from {self.agent.cur_pos} to tile {next_pos} and takes a small scan')
+                            f"Agent moves from {self.agent.cur_pos} to tile {next_pos} and takes a small scan")
                         self.agent.update_pos(next_pos)
                         self.is_win = self.agent.small_scan()
                     else:
                         # Large move
                         self.logs.put(
-                            'Agent moves from {self.agent.cur_pos} to tile {new_pos}')
+                            f"Agent moves from {self.agent.cur_pos} to tile {next_pos}")
                         self.agent.update_pos(next_pos)
                     step += 1
 
@@ -197,6 +198,8 @@ class Game:
                         (idx, turn, mask) = next_action[2]
                         truth = self.truth_list[turn-1]
                         self.agent.verify(idx, truth, mask)
+                        self.logs.put(
+                            f"Agent has verified the hint, it is {self.truth_list[self.turn_idx]}!!")
                         step += 1
 
                     elif next_action[1] == 1:
@@ -204,6 +207,8 @@ class Game:
                         next_move = next_action[2]
                         self.agent.move(next_move)
                         has_treasure = self.agent.small_scan()
+                        self.logs.put(
+                            f"Agent moves from {self.agent.cur_pos} to tile {next_move} and takes a small scan")
                         if has_treasure:
                             self.logs.put('WIN')
                             self.is_win = True
@@ -213,11 +218,15 @@ class Game:
                         # Move 3-4 tiles
                         next_move = next_action[2]
                         self.agent.move(next_move)
+                        self.logs.put(
+                            f"Agent moves from {self.agent.cur_pos} to tile {next_move}")
                         step += 1
 
                     elif next_action[1] == 3:
                         # Large scan 5x5
                         has_treasure = self.agent.large_scan()
+                        self.logs.put(
+                            f"Agent takes a large scan")
                         if has_treasure:
                             self.logs.put('WIN')
                             self.is_win = True
@@ -227,6 +236,8 @@ class Game:
                         # Teleport
                         pos = next_action[2]
                         self.agent.teleport(pos)
+                        self.logs.put(
+                            f"Agent teleport from {self.agent.cur_pos} to tile {pos}")
                         self.can_tele = False
                         # this action is not counted as a step
 
