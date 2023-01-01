@@ -29,6 +29,7 @@ class Game:
 
         # To be passed into LogDisplay of visualization.py
         self.logs = Queue()
+
         self.full_logs = []             # For output.txt
 
         self.hint_weights = np.array(
@@ -178,8 +179,8 @@ class Game:
 
                     elif next_action[1] == 1:
                         # Move 1-2 tiles and small scan
-                        move = next_action[2]
-                        self.agent.move(move)
+                        next_move = next_action[2]
+                        self.agent.move(next_move)
                         has_treasure = self.agent.small_scan()
                         if has_treasure:
                             self.logs.put('WIN')
@@ -188,8 +189,8 @@ class Game:
 
                     elif next_action[1] == 2:
                         # Move 3-4 tiles
-                        move = next_action[2]
-                        self.agent.move(move)
+                        next_move = next_action[2]
+                        self.agent.move(next_move)
                         step += 1
 
                     elif next_action[1] == 3:

@@ -58,28 +58,6 @@ tiles_no_treasure = np.array([[3, 11], [3, 12], [3, 13],
                              [5, 11], [5, 12], [5, 13]])
 
 
-class Agent:
-    '''
-        Agent for testing
-    '''
-
-    def __init__(self, x=2, y=2) -> None:
-        self.x = x
-        self.y = y
-
-    def move_agent(self, x_des, y_des):
-        tile_type_des = map.tile_type(x_des, y_des)
-        width, height = map.get_map_shape()
-        if (tile_type_des != 'M' and x_des > 0 and x_des < width
-                and y_des > 0 and y_des < height):
-            self.x = x_des
-            self.y = y_des
-        pass
-
-    def get_pos(self):
-        return self.x, self.y
-
-
 class App(tk.CTk):
     '''
         Application, responsible for managing main grids, components
@@ -114,7 +92,6 @@ class App(tk.CTk):
 
     def draw_map(self):
         self.map_display.display()  # Display map
-        self.map_display.create_agent()  # Randomize init position of agent, for testing
 
     def draw_side_information(self):
         self.side_information.draw_log()  # Display Logs
@@ -122,19 +99,21 @@ class App(tk.CTk):
 
     # Button to move onto the next state
     def next_turn(self, log_content="", note_content=""):
+
         self.game.next_turn()
-        # For testing
-        self.count += 1
-        if log_content == "":
-            self.side_information.log_display.insert_log(
-                f" Log content {self.count}")
-            self.side_information.note_display.insert_note(
-                f"Note content {self.count}")
-        else:
-            self.side_information.log_display.insert_log(log_content)
-            self.side_information.note_display.insert_note(note_content)
+
+        self.count += 1     # For testing
+
+        log_content = self.game.log()
+
+        self.side_information.log_display.insert_log(log_content)
+        self.side_information.note_display.insert_note(
+            f"Note content {self.count}")
+
+        agent_pos = self.game.get_agent_pos()
 
         self.map_display.move_agent()
+        self.map_display.move_agent(agent_pos[1], agent_pos[0])
 
         if self.count % 2 == 0:
             self.map_display.show_hints(tiles_hint)
@@ -198,66 +177,32 @@ class MapDisplay(tk.CTkFrame):
             master=self, width=self.map_size, height=self.map_size, highlightthickness=0)
         self.map.grid(row=1, column=1)
 
-        self.agent = Agent()    # Init an agent object for testing
-
         # Queue for agent position, each state the old_position will be pop out.
         # The queue maintains its only element
-        self.agent_pos = Queue(maxsize=2)
-        self.hints = Queue(maxsize=2)
+        self.agent_pos = Queue(maxsize=5)
+        self.hints = Queue(maxsize=5)
 
         self.rect_ids = np.empty(
             (rows, cols), dtype=int)   # ObjectID for easier
         # modification of tkinter canvas
         self.text_ids = np.empty((rows, cols), dtype=int)
 
-    # Randomize the init position of agent FOR TESTING
-
-    def create_agent(self):
-        while True:
-            height, width = map.get_map_shape()
-            x_des, y_des = random.randint(
-                2, width - 2), random.randint(2, height - 2)
-
-            # Get the tipe of tile
-            tile_type_des = map.tile_type(x_des, y_des)
-            if (tile_type_des != "M" and tile_type_des != "P" and tile_type_des != "T"
-                    and map.map[y_des, x_des] != 0):
-
-                # Update agent's new position to the Agent object
-                self.agent.move_agent(x_des, y_des)
-
-                # Push its Canvas.TextID as its new position into the queue
-                self.agent_pos.put(self.map.create_text((x_des+0.5)*self.cell_width,
-                                                        (y_des+0.5) *
-                                                        self.cell_height,
-                                                        text='A',
-                                                        anchor="center",
-                                                        font=(
-                                                            "Roboto bold", self.cell_font_size),
-                                                        fill="orange red"))
-                break
-
     # Randomize the position of agent FOR TESTING
+
     def move_agent(self, x_des=5, y_des=5):
-        height, width = map.get_map_shape()
-        while True:
-            x_des, y_des = random.randint(
-                2, width - 2), random.randint(2, height - 2)
-            tile_type_des = map.tile_type(x_des, y_des)
-            if (tile_type_des != "M" and map.map[y_des, x_des] != 0):
-                self.agent.move_agent(x_des, y_des)
-                self.agent_pos.put(self.map.create_text((x_des+0.5)*self.cell_width,
-                                                        (y_des+0.5) *
-                                                        self.cell_height,
-                                                        text='A',
-                                                        anchor="center",
-                                                        font=(
-                                                            "Roboto bold", self.cell_font_size),
-                                                        fill="orange red"))
-                self.map.delete(self.agent_pos.get())
-                break
+        self.agent_pos.put(self.map.create_text((x_des+0.5)*self.cell_width,
+                                                (y_des+0.5)*self.cell_height,
+                                                text='A',
+                                                anchor="center",
+                                                font=("Roboto bold",
+                                                      self.cell_font_size),
+                                                fill="orange red"))
+        if self.agent_pos.qsize() > 1:
+            self.map.delete(self.agent_pos.get())
+            # break
 
     # Display the hint tiles as cell with red borders.
+
     def show_hints(self, hint_tiles):
 
         # Pop out and remove the old hints (both in queue and on map display)
@@ -444,8 +389,6 @@ class NoteDisplay(tk.CTkFrame):
 
 
 if __name__ == "__main__":
-    # map = Map(16, 16)
-    # map.generate_map()
 
     game = Game(16, 16)
     map = game.map_manager

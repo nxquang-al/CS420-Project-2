@@ -10,7 +10,7 @@ class Agent:
         self.game_manager = game_manager
         self.map_manager = game_manager.map_manager
         self.knowledge_map = np.ones(
-            (game_manager.WIDTH , game_manager.HEIGHT), dtype=bool)
+            (game_manager.WIDTH, game_manager.HEIGHT), dtype=bool)
         self.cur_pos = list(initial_pos)
         # (idx, hint_type, data)
         self.hints = []
@@ -232,8 +232,9 @@ class Agent:
                 temp = dist_2_mean - heuristic
                 selected_move = move
                 count = heuristic
-        heapq.heappush(
-            actions, (count + min(num_available+1, 6), 1, selected_move))
+        if selected_move:
+            heapq.heappush(
+                actions, (count + min(num_available+1, 6), 1, selected_move))
 
         # Estimate large move without scan
         selected_move = None

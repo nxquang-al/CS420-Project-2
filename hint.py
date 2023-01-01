@@ -422,7 +422,7 @@ class HintManager:
             direction = 'North-West'
             mask[:pos[0]+1, :pos[1]+1] = 1
 
-        truth = self.map.check_direction(direction)
+        truth = self.map.check_direction(pos, direction)
         log = "Treasure is in the {} of the pirate's position {}".format(
             direction, pos)
         return 13, log, truth, mask
