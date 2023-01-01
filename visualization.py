@@ -118,14 +118,11 @@ class App(tk.CTk):
         self.map_display.move_agent(agent_pos[0], agent_pos[1])
 
         hint_tiles = self.game.pass_hint_tiles()
-        # hint_tiles = []
-        # for tile in array_of_hint_tiles:
-        #     hint_tiles.append(tile)
-
-        # print(hint_tiles)
         self.map_display.show_hints(hint_tiles)
 
-        # self.map_display.display_no_treasure(tiles_no_treasure)
+        scan_area = self.game.pass_scan_area()
+
+        self.map_display.display_no_treasure(scan_area)
 
 
 class SideInformation(tk.CTkFrame):
@@ -259,6 +256,11 @@ class MapDisplay(tk.CTkFrame):
         for (i, j) in no_treasure_tiles:
             self.map.tag_raise(self.rect_ids[i][j])
             self.map.itemconfigure(self.rect_ids[i][j], fill="light grey")
+        self.map.tag_raise('M')
+        self.map.tag_raise('P')
+        self.map.tag_raise('T')
+        self.map.tag_raise(self.agent_rec_id)
+        self.map.tag_raise(self.agent_text_id)
 
     # Display map
     def display(self):
@@ -305,6 +307,7 @@ class MapDisplay(tk.CTkFrame):
                                                            self.cell_height,
                                                            text=cell_type,
                                                            anchor="center",
+                                                           tags=cell_type,
                                                            font=(
                                                                "Roboto bold", self.cell_font_size),
                                                            fill=tile_colors.get(cell_type, "black"))
