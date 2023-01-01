@@ -209,6 +209,8 @@ class MapDisplay(tk.CTkFrame):
     # Display the hint tiles as cell with red borders.
 
     def show_hints(self, hint_tiles):
+        if hint_tiles is None or not len(hint_tiles):
+            return
 
         # Pop out and remove the old hints (both in queue and on map display)
         if not self.hints.empty():
@@ -226,12 +228,14 @@ class MapDisplay(tk.CTkFrame):
                 cell_type = map.tile_type(i, j)
                 self.map.tag_raise(self.rect_ids[i][j])
                 self.map.tag_raise(self.text_ids[i][j])
-                self.map.itemconfigure(self.rect_ids[i][j], outline="red", width=3)
+                self.map.itemconfigure(
+                    self.rect_ids[i][j], outline="red", width=3)
                 self.map.itemconfigure(self.text_ids[i][j],
-                                    text=cell_type,
-                                    anchor="center",
-                                    font=("Roboto bold", self.cell_font_size),
-                                    fill=tile_colors.get(cell_type, "black"))
+                                       text=cell_type,
+                                       anchor="center",
+                                       font=("Roboto bold",
+                                             self.cell_font_size),
+                                       fill=tile_colors.get(cell_type, "black"))
 
     # Display cells with no treasure, color them as grey
     def display_no_treasure(self, no_treasure_tiles):

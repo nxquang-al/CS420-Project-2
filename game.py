@@ -14,11 +14,12 @@ class Game:
         self.map_manager = Map(self.WIDTH, self.HEIGHT)
         self.hint_manager = HintManager(self.map_manager)
         self.truth_list = []
+
         self.pirate = Pirate(map=self.map_manager,
                              treasure_pos=self.map_manager.treasure_pos)
 
         self.agent_pos = (random.randint(0, self.WIDTH-4),
-                     random.randint(0, self.HEIGHT-4))
+                          random.randint(0, self.HEIGHT-4))
         self.agent = Agent(game_manager=self, initial_pos=self.agent_pos)
         self.known_treasure = False
 
@@ -56,7 +57,7 @@ class Game:
     def gen_agent_pos(self):
         while True:
             pos = (random.randint(0, self.WIDTH-4),
-                     random.randint(0, self.HEIGHT-4))
+                   random.randint(0, self.HEIGHT-4))
             if self.is_movable(pos):
                 self.agent_pos = pos
                 break
@@ -84,7 +85,7 @@ class Game:
             self.full_logs.append(log)
 
         return log_content  # String
-    
+
     def pass_hint_tiles(self):
         hint_tiles = []
         while not self.hint_tiles.empty():
@@ -140,7 +141,7 @@ class Game:
             self.truth_list.append(truth)
             array_of_tiles, binary_mask = self.agent.refactor_hint(
                 hint_type, data)
-            
+
             self.hint_tiles.put(array_of_tiles)
 
             self.agent.add_hint(self.turn_idx, hint_type, binary_mask)

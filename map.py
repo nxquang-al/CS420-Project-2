@@ -25,7 +25,7 @@ class Map:
         self.num_regions = random.randint(5, min(self.width, 7))
 
         # List of numpy array of adjacent regions
-        self.adjacent_list = self.get_neighbors()
+        self.adjacent_list = None
 
     def get_map_shape(self):
         return (self.width, self.height)
@@ -156,6 +156,10 @@ class Map:
                             self.map[new_x, new_y] = region
                             current_size += 1
 
+        # Get list of neighbors for each regions
+        self.adjacent_list = self.get_neighbors()
+        print('Adjacent list: {}'.format(self.adjacent_list))
+
         # Randomize the number of mountains
         self.num_mountain = random.randint(5, max(round(self.width/4), 5))
 
@@ -283,6 +287,8 @@ class Map:
         print(f"Mountains: {self.mountains}")
         print(f"Prisons: {self.prisons}")
         print(f"Treasure: {self.treasure_pos}")
+        print(output_map)
+        print(self.map)
         # Return the output map
         return output_map
 
@@ -305,6 +311,7 @@ class Map:
         temp = np.zeros((num_regions+1, num_regions+1), dtype=bool)
 
         self.map = self.map.astype(int)
+        print(self.map)
 
         # Check vertical adjacency
         a, b = self.map[:-1, :], self.map[1:, :]
@@ -401,7 +408,7 @@ class Map:
         '''
         if pos[0] < 0 or pos[0] >= self.width or pos[1] < 0 or pos[1] >= self.height:
             return False
-        return self.map[pos] != 0 and (np.array(pos) not in self.mountains)
+        return self.map[pos] != 0 and (pos not in self.mountains)
 
     def check_column(self, col_idx):
         '''
@@ -528,7 +535,8 @@ class Map:
 
     def get_mountain_region(self):
         # get the list of regions which have mountain
-        return np.unique(self.map[list(self.mountains)[:, 0], list(self.mountains)[:, 1]])
+        list_regions = [self.map[idx] for idx in self.mountains]
+        return np.unique(list_regions)
 
     def check_region(self, list_regions):
         region_tiles = None
