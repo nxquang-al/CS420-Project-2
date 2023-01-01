@@ -50,11 +50,13 @@ class Agent:
         bot_right = (min(self.cur_pos[0]+1, self.width),
                      min(self.cur_pos[1]+1, self.height))
         has_tresure = self.game_manager.scan_rectangle(top_left, bot_right)
+        self.game_manager.gen_scan_area(1)
+
         if has_tresure:
             return True
         self.knowledge_map[top_left[0]:(
             bot_right[0]+1), top_left[1]:(bot_right[1]+1)] = 0
-        print(self.knowledge_map.astype(int).T)
+
         return False
 
     def large_scan(self) -> bool:
@@ -65,11 +67,12 @@ class Agent:
         bot_right = (min(self.cur_pos[0]+2, self.width),
                      min(self.cur_pos[1]+2, self.height))
         has_treasure = self.game_manager.scan_rectangle(top_left, bot_right)
+        self.game_manager.gen_scan_area(2)
+
         if has_treasure:
             return True
         self.knowledge_map[top_left[0]:(
             bot_right[0]+1), top_left[1]:(bot_right[1]+1)] = 0
-        print(self.knowledge_map.astype(int).T)
         return False
 
     def add_hint(self, idx, hint_type, data):

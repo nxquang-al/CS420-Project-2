@@ -18,7 +18,7 @@ class Game:
         self.pirate = Pirate(map=self.map_manager,
                              treasure_pos=self.map_manager.treasure_pos)
 
-        x = random.randint(self.WIDTH//4, self.WIDTH//2)
+        x = random.randint(self.WIDTH//5, self.WIDTH//2 + self.WIDTH//5)
 
         self.agent_pos = (x, x)
         self.agent = Agent(game_manager=self, initial_pos=self.agent_pos)
@@ -34,6 +34,8 @@ class Game:
 
         self.full_logs = []             # For output.txt
         self.hint_tiles = Queue()
+
+        self.scan_area = []
 
         self.hint_weights = np.array(
             [1, 1, 1, 1, 1, 0, 0.5, 1, 1, 1, 1, 0.5, 0, 0.5, 1])
@@ -94,6 +96,16 @@ class Game:
 
         # print(f"Hint: {hint_tiles}")
         return hint_tiles
+    
+    def gen_scan_area(self, scan_type):
+        (x, y) = self.agent.cur_pos
+        if scan_type == 1:
+            self.scan_area = [(i, j) for i in range(x-1, x+2) for j in range(y-1, y+2)]
+        else:
+            self.scan_area = [(i, j) for i in range(x-2, x+3) for j in range(y-2, y+3)]
+    
+    def pass_scan_area(self):
+        return self.scan_area
 
     def visualize(self):
         return
