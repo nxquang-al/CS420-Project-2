@@ -188,6 +188,11 @@ class Game:
                     if next_action[1] == 0:
                         # Verification
                         (idx, turn, mask) = next_action[2]
+                        print('=====')
+                        print("Truth index: {}".format(turn))
+                        print("Truth list length: {}".format(
+                            len(self.truth_list)))
+                        print('=====')
                         truth = self.truth_list[turn-1]
                         self.agent.verify(idx, truth, mask)
                         step += 1
