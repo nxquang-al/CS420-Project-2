@@ -22,8 +22,9 @@ class Map:
         # Numpy array of prisons array([p1, p2, p3,...])
         self.prisons = None
 
-        self.input_region = random.randint(5, min(self.width, 7)) # including sea
-        self.num_regions = self.input_region - 1 # number of lands
+        self.input_region = random.randint(
+            5, min(self.width, 7))  # including sea
+        self.num_regions = self.input_region - 1  # number of lands
 
         # List of numpy array of adjacent regions
         self.adjacent_list = None
@@ -157,10 +158,6 @@ class Map:
                             self.map[new_x, new_y] = region
                             current_size += 1
 
-        # Get list of neighbors for each regions
-        self.adjacent_list = self.get_neighbors()
-        print('Adjacent list: {}'.format(self.adjacent_list))
-
         # Randomize the number of mountains
         self.num_mountain = random.randint(5, max(round(self.width/4), 5))
 
@@ -262,6 +259,10 @@ class Map:
                 else:
                     break
 
+        # Get list of neighbors for each regions
+        self.adjacent_list = self.get_neighbors()
+        print('Adjacent list: {}'.format(self.adjacent_list))
+
         # Initialize the output map
         output_map = np.empty((self.width, self.height), dtype='object')
 
@@ -275,7 +276,6 @@ class Map:
                 # for mountain in self.mountains:
                 if (i, j) in self.mountains:
                     output_map[i, j] += 'M'
-                    break
 
                 # Check if this cell is a prison
                 if (i, j) in self.prisons:

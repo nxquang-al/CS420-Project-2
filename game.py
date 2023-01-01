@@ -35,7 +35,7 @@ class Game:
         self.hint_tiles = Queue()
 
         self.hint_weights = np.array(
-            [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 1])
+            [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 0, 0.5, 1])
 
         self.turn_idx = 0
         self.can_tele = True
@@ -97,20 +97,6 @@ class Game:
     def visualize(self):
         return
 
-    def generate_turn(self, turn_idx):
-        self.logs.put('START TURN {}'.format(turn_idx))
-        if turn_idx == 1:
-            hint_type, log, truth, data = self.hint_manager.gen_first_hint()
-        else:
-            hint_type, log, truth, data = self.hint_manager.generate()
-        self.truth_list.append(truth)
-        self.agent.add_hint(turn_idx, hint_type, data)
-
-        self.logs.put('HINT {}: {}'.format(turn_idx, log))
-        self.logs.put(f"ADD HINT {self.turn_idx} TO HINT LIST")
-        if turn_idx == 1:
-            self.logs.put('HINT 1: is_verified = TRUE, is_truth = TRUE')
-
     def get_hint_truth(self, hint_idx):
         return self.truth_list[hint_idx]
 
@@ -126,10 +112,12 @@ class Game:
 
             if self.turn_idx == self.prison_revealTurn:
                 self.logs.put(
-                    "The location of pirate is {}".format(self.pirate.cur_pos))
+                    "The is at the prison {}".format(self.pirate.cur_pos))
+                self.hint_weights = np.array(
+                    [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 1])
 
             if self.turn_idx == self.pirate_freeTurn:
-                self.logs.put("The pirate has been freed")
+                self.logs.put("The pirate is free")
                 self.pirate_isFree = True
 
             if self.turn_idx == 1:
@@ -198,11 +186,16 @@ class Game:
                         truth = self.truth_list[turn-1]
                         self.agent.verify(idx, truth, mask)
                         step += 1
+                        self.logs.put(
+                            'HINT {}: is_verified = TRUE, is_truth = {}'.format(turn, truth))
 
                     elif next_action[1] == 1:
                         # Move 1-2 tiles and small scan
                         next_move = next_action[2]
+                        prev_pos = self.agent.cur_pos
                         self.agent.move(next_move)
+                        self.logs.put('Agent moves a small steps from {} to {} and takes a small scan'.format(
+                            prev_pos, self.agent.cur_pos))
                         has_treasure = self.agent.small_scan()
                         if has_treasure:
                             self.logs.put('WIN')
@@ -212,7 +205,10 @@ class Game:
                     elif next_action[1] == 2:
                         # Move 3-4 tiles
                         next_move = next_action[2]
+                        prev_pos = self.agent.cur_pos
                         self.agent.move(next_move)
+                        self.logs.put('Agent moves a large steps from {} to {}'.format(
+                            prev_pos, self.agent.cur_pos))
                         step += 1
 
                     elif next_action[1] == 3:
@@ -228,6 +224,8 @@ class Game:
                         pos = next_action[2]
                         self.agent.teleport(pos)
                         self.can_tele = False
+                        self.logs.put(
+                            "Agent teleports to tiles {}".format(pos))
                         # this action is not counted as a step
 
                     if np.count_nonzero(self.agent.knowledge_map) == 1:

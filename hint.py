@@ -185,7 +185,7 @@ class HintManager:
 
     def gen_5th_type(self):
         '''
-        A small rectangle area that doesn't has the treasure.
+        A small rectangle area that doesn't have the treasure.
         '''
         map_area = self.map.width * self.map.height
         rectangle = None
