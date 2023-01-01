@@ -96,6 +96,9 @@ class Agent:
             # Hint type 5, data is a rectangle does not contain treasure
             binary_mask = arrayTiles_to_binaryMask(data, flip=True)
 
+        elif hint_type == 6:
+            pass
+
         elif hint_type == 7:
             # Hint type 7, data is column or/and row contain treasure
             col, row = data

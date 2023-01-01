@@ -235,18 +235,18 @@ class HintManager:
         truth = False
         if choice == 0:
             # Column
-            c = random.randint(0, width)
+            c = random.randint(0, width-1)
             truth = self.map.check_column(c)
             log = 'Column {} contains the treasure'.format(c)
         elif choice == 1:
             # Row
-            r = random.randint(0, height)
+            r = random.randint(0, height-1)
             truth = self.map.check_row(r)
             log = 'Row {} contains the treasure'.format(r)
         elif choice == 2:
             # Both
-            c = random.randint(0, width)
-            r = random.randint(0, height)
+            c = random.randint(0, width-1)
+            r = random.randint(0, height-1)
             truth = self.map.check_column(c) and self.map.check_row(r)
             log = 'Column {} and row {} contain the treasure'.format(c, r)
 
@@ -264,20 +264,20 @@ class HintManager:
         truth = False
         if choice == 0:
             # Column
-            c = random.randint(0, width)
+            c = random.randint(0, width-1)
             # column = np.expand_dims(np.arange(0,height), axis=1)
             # column = np.pad(column, (1,0), 'constant', constant_values=c)
             log = 'Column {} does not contain the treasure'.format(c)
             truth = not self.map.check_column(c)
         elif choice == 1:
             # Row
-            r = random.randint(0, height)
+            r = random.randint(0, height-1)
             log = 'Row {} does not contain the treasure'.format(r)
             truth = not self.map.check_row(r)
         elif choice == 2:
             # Both
-            c = random.randint(0, width)
-            r = random.randint(0, height)
+            c = random.randint(0, width-1)
+            r = random.randint(0, height-1)
             log = 'Column {} and row {} do not contain the treasure'.format(
                 c, r)
             truth = not self.map.check_column(c) and not self.map.check_row(r)
@@ -288,10 +288,11 @@ class HintManager:
         2 regions that the treasure is somewhere in their boundary.
         '''
         rid_1 = random.randint(1, self.map.num_regions)
-        rand_idx = np.random.choice(
-            self.map.adjacent_list[rid_1-1].shape[0], size=1, replace=False)[0]
+        # rand_idx = np.random.choice(
+        #     self.map.adjacent_list[rid_1-1].shape[0], size=1, replace=False)[0]
+        rid_2 = random.choice(self.map.adjacent_list[rid_1-1])
 
-        rid_2 = self.map.adjacent_list[rid_1-1][rand_idx]
+        # rid_2 = self.map.adjacent_list[rid_1-1][rand_idx]
 
         log = 'Treasure is somewhere in the boundary of regions {} and {}.'.format(
             rid_1, rid_2)
