@@ -30,7 +30,7 @@ class Map:
     def get_map_shape(self):
         return (self.width, self.height)
 
-    def get_region(self, y, x):
+    def get_region(self, x, y):
         if x > 0 and x < self.height and y > 0 and y < self.height:
             return self.map[x, y]
         return 0
@@ -46,7 +46,7 @@ class Map:
     def is_sea(self, pos):
         return self.map[pos] == 0
 
-    def tile_type(self, y, x):
+    def tile_type(self, x, y):
         if x > 0 and x < self.height and y > 0 and y < self.height:
             if self.is_mountain((x, y)) is True:
                 return 'M'
@@ -204,7 +204,7 @@ class Map:
                 if self.map[x, y] != 0:
                     prison_overlap = False
                     # for mountain in self.mountains:
-                    if (x, y) in self.mountains:
+                    if (x, y) in self.mountains or (x,y) in self.prisons:
                         prison_overlap = True
                         break
                     if not prison_overlap:
@@ -221,7 +221,6 @@ class Map:
                 # for mountain in self.mountains:
                 if (x, y) in self.mountains:
                     treasure_overlap = True
-                    break
                 if (x, y) in self.prisons:
                     treasure_overlap = True
                 if not treasure_overlap:
@@ -251,10 +250,9 @@ class Map:
 
         # Make sea on the right goes random
         for i in range(self.height):
-            sea = random.randint(2, 4)
+            sea = random.randint(2, 3)
             for j in range(self.width-1, self.width-sea, -1):
-                tile_type = self.tile_type(j, i)
-                if tile_type == '':
+                if (i, j) not in self.mountains and (i, j) not in self.prisons and (i, j) != self.treasure_pos:
                     self.map[i, j] = 0
                 else:
                     break
@@ -282,7 +280,9 @@ class Map:
                 if (i, j) == self.treasure_pos:
                     output_map[i, j] += 'T'
 
-        print(self.mountains)
+        print(f"Mountains: {self.mountains}")
+        print(f"Prisons: {self.prisons}")
+        print(f"Treasure: {self.treasure_pos}")
         # Return the output map
         return output_map
 
