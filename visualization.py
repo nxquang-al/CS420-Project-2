@@ -57,24 +57,24 @@ tiles_no_treasure = np.array([[3, 11], [3, 12], [3, 13],
                              [4, 11], [4, 12], [4, 13],
                              [5, 11], [5, 12], [5, 13]])
 
-class Agent:
-    '''
-        Agent for testing
-    '''
-    def __init__(self, x=2, y=2) -> None:    
-        self.x = x
-        self.y = y
+# class Agent:
+#     '''
+#         Agent for testing
+#     '''
+#     def __init__(self, x=2, y=2) -> None:    
+#         self.x = x
+#         self.y = y
     
-    def move_agent(self, x_des, y_des):
-        tile_type_des = map.tile_type(x_des, y_des)
-        width, height = map.get_map_shape()
-        if (tile_type_des != 'M' and x_des > 0 and x_des < width 
-            and y_des > 0 and y_des < height):  
-            self.x = x_des
-            self.y = y_des
-        pass
-    def get_pos(self):
-        return self.x, self.y
+#     def move_agent(self, x_des, y_des):
+#         tile_type_des = map.tile_type(x_des, y_des)
+#         width, height = map.get_map_shape()
+#         if (tile_type_des != 'M' and x_des > 0 and x_des < width 
+#             and y_des > 0 and y_des < height):  
+#             self.x = x_des
+#             self.y = y_des
+#         pass
+#     def get_pos(self):
+#         return self.x, self.y
 class App(tk.CTk):
     '''
         Application, responsible for managing main grids, components
@@ -182,7 +182,7 @@ class MapDisplay(tk.CTkFrame):
         self.map = tk.CTkCanvas(master=self, width = self.map_size, height=self.map_size, highlightthickness=0)
         self.map.grid(row=1, column=1)
 
-        self.agent = Agent()    # Init an agent object for testing
+        # self.agent = Agent()    # Init an agent object for testing
 
         # Queue for agent position, each state the old_position will be pop out. 
         # The queue maintains its only element
@@ -194,27 +194,27 @@ class MapDisplay(tk.CTkFrame):
 
 
     # Randomize the init position of agent FOR TESTING    
-    def create_agent(self):
-        while True:
-            height, width = map.get_map_shape()
-            x_des, y_des = random.randint(2, width - 2), random.randint(2, height - 2)
+    # def create_agent(self):
+    #     while True:
+    #         height, width = map.get_map_shape()
+    #         x_des, y_des = random.randint(2, width - 2), random.randint(2, height - 2)
 
-            # Get the tipe of tile
-            tile_type_des = map.tile_type(x_des, y_des) 
-            if (tile_type_des != "M" and tile_type_des != "P" and tile_type_des != "T" 
-                and map.map[y_des, x_des] != 0):
+    #         # Get the tipe of tile
+    #         tile_type_des = map.tile_type(x_des, y_des) 
+    #         if (tile_type_des != "M" and tile_type_des != "P" and tile_type_des != "T" 
+    #             and map.map[y_des, x_des] != 0):
 
-                # Update agent's new position to the Agent object
-                self.agent.move_agent(x_des, y_des)
+    #             # Update agent's new position to the Agent object
+    #             self.agent.move_agent(x_des, y_des)
 
-                # Push its Canvas.TextID as its new position into the queue
-                self.agent_pos.put(self.map.create_text((x_des+0.5)*self.cell_width, 
-                                        (y_des+0.5)*self.cell_height, 
-                                        text='A', 
-                                        anchor="center",
-                                        font=("Roboto bold", self.cell_font_size),
-                                        fill="orange red"))
-                break
+    #             # Push its Canvas.TextID as its new position into the queue
+    #             self.agent_pos.put(self.map.create_text((x_des+0.5)*self.cell_width, 
+    #                                     (y_des+0.5)*self.cell_height, 
+    #                                     text='A', 
+    #                                     anchor="center",
+    #                                     font=("Roboto bold", self.cell_font_size),
+    #                                     fill="orange red"))
+    #             break
     
     # Randomize the position of agent FOR TESTING
     def move_agent(self, x_des = 5, y_des = 5):
@@ -230,7 +230,8 @@ class MapDisplay(tk.CTkFrame):
                                 anchor="center",
                                 font=("Roboto bold", self.cell_font_size),
                                 fill="orange red"))
-        self.map.delete(self.agent_pos.get())
+        if self.agent_pos.qsize() > 1:                                
+            self.map.delete(self.agent_pos.get())
                 # break         
           
     # Display the hint tiles as cell with red borders.
