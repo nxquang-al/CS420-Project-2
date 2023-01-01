@@ -192,17 +192,31 @@ class MapDisplay(tk.CTkFrame):
         # modification of tkinter canvas
         self.text_ids = np.empty((rows, cols), dtype=int)
 
+        self.agent_text_id = None
+        self.agent_rec_id = None
+
     # Randomize the position of agent FOR TESTING
 
     def move_agent(self, x_des=5, y_des=5):
-        self.agent_pos.put(self.map.create_text((x_des+0.5)*self.cell_width,
+        self.agent_text_id = self.map.create_text((x_des+0.5)*self.cell_width,
                                                 (y_des+0.5)*self.cell_height,
                                                 text='A',
                                                 anchor="center",
                                                 font=("Roboto bold",
                                                       self.cell_font_size),
-                                                fill="orange red"))
-        if self.agent_pos.qsize() > 1:
+                                                fill="orange red")
+        self.agent_rec_id = self.map.create_rectangle((x_des+0.15)*self.cell_width,
+                                (y_des+0.15)*self.cell_height,
+                                (x_des+0.85)*self.cell_width,
+                                (y_des+0.85)*self.cell_height,
+                                # width=int(self.cell_width*0.75),
+                                fill="yellow")
+
+        self.agent_pos.put(self.agent_text_id)
+        self.agent_pos.put(self.agent_rec_id)
+
+        if self.agent_pos.qsize() > 2:
+            self.map.delete(self.agent_pos.get())
             self.map.delete(self.agent_pos.get())
             # break
 
@@ -236,6 +250,9 @@ class MapDisplay(tk.CTkFrame):
                                        font=("Roboto bold",
                                              self.cell_font_size),
                                        fill=tile_colors.get(cell_type, "black"))
+        
+        self.map.tag_raise(self.agent_rec_id)
+        self.map.tag_raise(self.agent_text_id)
 
     # Display cells with no treasure, color them as grey
     def display_no_treasure(self, no_treasure_tiles):
@@ -312,7 +329,7 @@ class LogDisplay(tk.CTkFrame):
 
         self.text = tk.CTkTextbox(self, width=self.log_width,
                                   height=self.log_height,
-                                  font=("Roboto", 21))
+                                  font=("Roboto", 19))
         self.text.grid(row=1, column=0, padx=20, pady=10)
 
     def insert_log(self, content="> Game start"):
@@ -366,8 +383,20 @@ class RegionDisplay(tk.CTkFrame):
         no_treasure_region = tk.CTkCanvas(master=self, width=self.canvas_width,
                                           height=self.canvas_height,
                                           bg="light grey")
+        hint_tiles = tk.CTkCanvas(master=self, width=self.canvas_width,
+                                          height=self.canvas_height,
+                                          bg="gray16",
+                                          highlightbackground="red")
+        hint_tiles.create_text(self.canvas_width//2, self.canvas_height//2,
+                                   text="Hint",
+                                   anchor="center",
+                                   font=("Roboto bold", 16),
+                                   fill="gray90")
+
         no_treasure_region.grid(
             row=1, column=self.upper_region_count, padx=10, pady=10)
+        hint_tiles.grid(
+            row=2, column=self.upper_region_count, padx=10, pady=10)
 
 
 class NoteDisplay(tk.CTkFrame):

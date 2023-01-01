@@ -18,8 +18,9 @@ class Game:
         self.pirate = Pirate(map=self.map_manager,
                              treasure_pos=self.map_manager.treasure_pos)
 
-        self.agent_pos = (random.randint(0, self.WIDTH-4),
-                          random.randint(0, self.HEIGHT-4))
+        x = random.randint(self.WIDTH//4, self.WIDTH//2)
+
+        self.agent_pos = (x, x)
         self.agent = Agent(game_manager=self, initial_pos=self.agent_pos)
         self.known_treasure = False
 
@@ -174,7 +175,7 @@ class Game:
                     else:
                         # Large move
                         self.logs.put(
-                            'Agent moves from {} to tile {}'.format(self.agent.cur_pos, next_pos))
+                            f"Agent moves from {self.agent.cur_pos} to tile {next_pos}")
                         self.agent.update_pos(next_pos)
                     step += 1
 
@@ -195,6 +196,8 @@ class Game:
                         print('=====')
                         truth = self.truth_list[turn-1]
                         self.agent.verify(idx, truth, mask)
+                        self.logs.put(
+                            f"Agent has verified the hint, it is {self.truth_list[self.turn_idx]}!!")
                         step += 1
                         self.logs.put(
                             'HINT {}: is_verified = TRUE, is_truth = {}'.format(turn, truth))
