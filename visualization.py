@@ -332,9 +332,9 @@ class RegionDisplay(tk.CTkFrame):
 
         self.width = width
         self.height = height
-        self.num_regions = num_regions
+        self.num_regions = num_regions + 1
 
-        self.upper_region_count = math.ceil(num_regions/2)
+        self.upper_region_count = math.ceil(self.num_regions/2)
         self.canvas_width = width//(self.upper_region_count+2)
         self.canvas_height = height//4
 

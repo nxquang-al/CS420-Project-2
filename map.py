@@ -22,7 +22,8 @@ class Map:
         # Numpy array of prisons array([p1, p2, p3,...])
         self.prisons = None
 
-        self.num_regions = random.randint(5, min(self.width, 7))
+        self.input_region = random.randint(5, min(self.width, 7)) # including sea
+        self.num_regions = self.input_region - 1 # number of lands
 
         # List of numpy array of adjacent regions
         self.adjacent_list = self.get_neighbors()
@@ -71,12 +72,12 @@ class Map:
             Get the center coordinate of a region
         '''
         land_area = self.width - sea_size*2
-        num_regions_upper = self.num_regions // 2
+        num_regions_upper = self.input_region // 2
 
         start_x_upper = land_area//(num_regions_upper+1) + sea_size - 1
         start_y_upper = (self.height//2 - sea_size) // 2
 
-        if region <= self.num_regions//2:  # region on the upper half
+        if region <= self.input_region//2:  # region on the upper half
             x = start_x_upper + (land_area // num_regions_upper)*(region-1)
             y = start_y_upper
             area = round(self.width // num_regions_upper)
@@ -85,7 +86,7 @@ class Map:
                 (region-num_regions_upper-1)
             y = start_y_upper + \
                 (self.height//2 - start_y_upper)*2 - self.width//5
-            area = round(self.width // (self.num_regions -
+            area = round(self.width // (self.input_region -
                          num_regions_upper)*random.uniform(0.4, 1))
 
         if self.width > 30:
@@ -129,13 +130,13 @@ class Map:
             sea_size = random.randint(3, 6)
 
         self.map = self.map.astype(int)
-        for region in range(1, self.num_regions):
+        for region in range(1, self.input_region):
             queue = []
             center_x, center_y, area = self.get_region_center(sea_size, region)
             queue.append((center_x, center_y))
             self.map[center_x, center_y] = region
 
-            avg_area = self.width*self.height//self.num_regions
+            avg_area = self.width*self.height//self.input_region
             region_size = random.randint(avg_area, round(avg_area*1.5))
 
             # Set the region of each cell using BFS
