@@ -75,6 +75,7 @@ class Agent:
 
     def refactor_hint(self, hint_type, data):
         array_of_tiles = None
+        binary_mask = None
         if hint_type == 1:
             # Hint type 1, data is an array of tiles do not contain treasure
             binary_mask = arrayTiles_to_binaryMask(data, flip=True)
@@ -94,6 +95,9 @@ class Agent:
         elif hint_type == 5:
             # Hint type 5, data is a rectangle does not contain treasure
             binary_mask = arrayTiles_to_binaryMask(data, flip=True)
+
+        elif hint_type == 6:
+            pass
 
         elif hint_type == 7:
             # Hint type 7, data is column or/and row contain treasure
