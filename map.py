@@ -41,7 +41,7 @@ class Map:
     def is_mountain(self, pos):
         # pos = np.asarray(pos)
         # return any(np.array_equal(pos, mountain) for mountain in self.mountains)
-        return any([pos in mountain for mountain in self.mountains])
+        return any([pos in self.mountains])
 
     def is_sea(self, pos):
         return self.map[pos] == 0
@@ -188,7 +188,8 @@ class Map:
                             break
 
             # Add the mountain to the list
-            self.mountains.append(mountain)
+            for i in mountain:
+                self.mountains.append(i)
 
         # Randomize the number of prisons
         self.num_prisons = random.randint(5, max(round(self.width/4), 5))
@@ -202,10 +203,10 @@ class Map:
                 y = random.randint(0, self.height - sea_size - 2)
                 if self.map[x, y] != 0:
                     prison_overlap = False
-                    for mountain in self.mountains:
-                        if (x, y) in mountain:
-                            prison_overlap = True
-                            break
+                    # for mountain in self.mountains:
+                    if (x, y) in self.mountains:
+                        prison_overlap = True
+                        break
                     if not prison_overlap:
                         self.prisons.append((x, y))
                         break
@@ -217,10 +218,10 @@ class Map:
             if self.map[x, y] != 0:
                 # Check if the treasure is not on top of a mountain or prison
                 treasure_overlap = False
-                for mountain in self.mountains:
-                    if (x, y) in mountain:
-                        treasure_overlap = True
-                        break
+                # for mountain in self.mountains:
+                if (x, y) in self.mountains:
+                    treasure_overlap = True
+                    break
                 if (x, y) in self.prisons:
                     treasure_overlap = True
                 if not treasure_overlap:
@@ -268,10 +269,10 @@ class Map:
                 output_map[i, j] = str(region)
 
                 # Check if this cell is a mountain
-                for mountain in self.mountains:
-                    if (i, j) in mountain:
-                        output_map[i, j] += 'M'
-                        break
+                # for mountain in self.mountains:
+                if (i, j) in self.mountains:
+                    output_map[i, j] += 'M'
+                    break
 
                 # Check if this cell is a prison
                 if (i, j) in self.prisons:
