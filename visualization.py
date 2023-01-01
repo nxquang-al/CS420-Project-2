@@ -5,6 +5,7 @@ import sv_ttk
 from map import Map
 import numpy as np
 import random
+import math
 from queue import Queue
 from game import Game
 
@@ -49,8 +50,8 @@ tk.set_default_color_theme("dark-blue")
 
 
 # Array of hint tiles (for testing)
-tiles_hint = np.array([[3, 3], [3, 4], [3, 5], [4, 3], [5, 3]])
-tiles_hint2 = np.array([[7, 3], [7, 4], [7, 5], [4, 7], [5, 7]])
+# tiles_hint = np.array([[3, 3], [3, 4], [3, 5], [4, 3], [5, 3]])
+# tiles_hint2 = np.array([[7, 3], [7, 4], [7, 5], [4, 7], [5, 7]])
 
 # Array of tiles without treasure (for testing)
 tiles_no_treasure = np.array([[3, 11], [3, 12], [3, 13],
@@ -111,14 +112,18 @@ class App(tk.CTk):
             f"Note content {self.count}")
 
         agent_pos = self.game.get_agent_pos()
+        print(f"Agent pos: {agent_pos}")
 
         self.map_display.move_agent()
-        self.map_display.move_agent(agent_pos[1], agent_pos[0])
+        self.map_display.move_agent(agent_pos[0], agent_pos[1])
 
-        if self.count % 2 == 0:
-            self.map_display.show_hints(tiles_hint)
-        else:
-            self.map_display.show_hints(tiles_hint2)
+        hint_tiles = self.game.pass_hint_tiles()
+        # hint_tiles = []
+        # for tile in array_of_hint_tiles:
+        #     hint_tiles.append(tile)
+
+        # print(hint_tiles)
+        self.map_display.show_hints(hint_tiles)
 
         # self.map_display.display_no_treasure(tiles_no_treasure)
 
@@ -179,8 +184,8 @@ class MapDisplay(tk.CTkFrame):
 
         # Queue for agent position, each state the old_position will be pop out.
         # The queue maintains its only element
-        self.agent_pos = Queue(maxsize=5)
-        self.hints = Queue(maxsize=5)
+        self.agent_pos = Queue()
+        self.hints = Queue()
 
         self.rect_ids = np.empty(
             (rows, cols), dtype=int)   # ObjectID for easier
@@ -208,23 +213,25 @@ class MapDisplay(tk.CTkFrame):
         # Pop out and remove the old hints (both in queue and on map display)
         if not self.hints.empty():
             old_hints = self.hints.get()
-            for (i, j) in old_hints:
-                self.map.tag_lower(self.rect_ids[i][j])
-                self.map.itemconfigure(
-                    self.rect_ids[i][j], outline="black", width=1)
+            for tile in old_hints:
+                for (i, j) in tile:
+                    self.map.tag_lower(self.rect_ids[i][j])
+                    self.map.itemconfigure(
+                        self.rect_ids[i][j], outline="black", width=1)
 
         # Push the new hint tiles into the queue (as numpy array)
         self.hints.put(hint_tiles)
-        for (i, j) in hint_tiles:
-            cell_type = map.tile_type(i, j)
-            self.map.tag_raise(self.rect_ids[i][j])
-            self.map.tag_raise(self.text_ids[i][j])
-            self.map.itemconfigure(self.rect_ids[i][j], outline="red", width=3)
-            self.map.itemconfigure(self.text_ids[i][j],
-                                   text=cell_type,
-                                   anchor="center",
-                                   font=("Roboto bold", self.cell_font_size),
-                                   fill=tile_colors.get(cell_type, "black"))
+        for tile in hint_tiles:
+            for (i, j) in tile:
+                cell_type = map.tile_type(i, j)
+                self.map.tag_raise(self.rect_ids[i][j])
+                self.map.tag_raise(self.text_ids[i][j])
+                self.map.itemconfigure(self.rect_ids[i][j], outline="red", width=3)
+                self.map.itemconfigure(self.text_ids[i][j],
+                                    text=cell_type,
+                                    anchor="center",
+                                    font=("Roboto bold", self.cell_font_size),
+                                    fill=tile_colors.get(cell_type, "black"))
 
     # Display cells with no treasure, color them as grey
     def display_no_treasure(self, no_treasure_tiles):
@@ -327,7 +334,7 @@ class RegionDisplay(tk.CTkFrame):
         self.height = height
         self.num_regions = num_regions
 
-        self.upper_region_count = round(num_regions/2)
+        self.upper_region_count = math.ceil(num_regions/2)
         self.canvas_width = width//(self.upper_region_count+2)
         self.canvas_height = height//4
 

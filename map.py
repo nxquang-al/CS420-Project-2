@@ -161,7 +161,7 @@ class Map:
 
         # Generate the mountains
         self.mountains = []
-        for i in range(self.num_mountain):
+        while len(self.mountains) < self.num_mountain:
            # Randomize the size of the mountain
             size = random.randint(3, max(round(self.width/4), 4))
 
@@ -196,7 +196,7 @@ class Map:
 
         # Generate the prisons
         self.prisons = []
-        for i in range(self.num_prisons):
+        while len(self.prisons) < self.num_prisons:
             # Randomize the position of the prison
             while True:
                 x = random.randint(0, self.width - sea_size - 2)
@@ -528,7 +528,7 @@ class Map:
 
     def get_mountain_region(self):
         # get the list of regions which have mountain
-        return np.unique(self.map[self.mountains[:, 0], self.mountains[:, 1]])
+        return np.unique(self.map[list(self.mountains)[:, 0], list(self.mountains)[:, 1]])
 
     def check_region(self, list_regions):
         region_tiles = None
