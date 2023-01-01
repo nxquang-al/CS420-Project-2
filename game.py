@@ -130,7 +130,7 @@ class Game:
             self.logs.put(f"ADD HINT {self.turn_idx} TO HINT LIST")
             if self.turn_idx == 1:
                 self.logs.put('HINT 1: is_verified = TRUE, is_truth = TRUE')
-                _, _, mask = self.agent.refactor_hint_data(0)
+                mask = self.agent.hints[0][2]
                 self.agent.verify(0, True, mask)
 
             step = 0
