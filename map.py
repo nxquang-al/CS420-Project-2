@@ -204,7 +204,7 @@ class Map:
                 if self.map[x, y] != 0:
                     prison_overlap = False
                     # for mountain in self.mountains:
-                    if (x, y) in self.mountains or (x,y) in self.prisons:
+                    if (x, y) in self.mountains or (x, y) in self.prisons:
                         prison_overlap = True
                         break
                     if not prison_overlap:
