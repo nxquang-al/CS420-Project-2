@@ -129,7 +129,6 @@ class Map:
             sea_size = random.randint(3, 6)
 
         self.map = self.map.astype(int)
-
         for region in range(1, self.num_regions):
             queue = []
             center_x, center_y, area = self.get_region_center(sea_size, region)
@@ -282,6 +281,7 @@ class Map:
                 if (i, j) == self.treasure_pos:
                     output_map[i, j] += 'T'
 
+        print(self.mountains)
         # Return the output map
         return output_map
 
@@ -528,7 +528,7 @@ class Map:
     def get_mountain_region(self):
         # get the list of regions which have mountain
         return np.unique(self.map[self.mountains[:, 0], self.mountains[:, 1]])
-        
+
     def check_region(self, list_regions):
         region_tiles = None
         for region in list_regions:

@@ -229,7 +229,7 @@ class HintManager:
         '''
         width, height = self.map.get_map_shape()
         # Option: 0 - only column, 1 - only row, 2 - both
-        choice = random.choice([0, 1, 2], weights=[0.45, 0.45, 0.1], size=1)[0]
+        choice = random.choices([0, 1, 2], weights=[0.45, 0.45, 0.1], k=1)[0]
         c, r = None, None
         log = ''
         truth = False
@@ -257,7 +257,8 @@ class HintManager:
         A column and/or a row that do not contain the treasure.
         '''
         width, height = self.map.get_map_shape()
-        choice = random.choice([0, 1, 2], weights=[0.45, 0.45, 0.1], size=1)[0]
+        choice = random.choices(
+            [0, 1, 2], weights=[0.45, 0.45, 0.1], k=1)[0]
 
         c = r = None
         truth = False
