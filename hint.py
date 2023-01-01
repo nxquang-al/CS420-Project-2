@@ -57,11 +57,10 @@ class HintManager:
         self.agent_pos = agent_pos
         self.pirate_pos = pirate_pos
 
-        hint_type = random.choices(range(1, 16), weights=hint_weights, k=1)[0]
-        truth_val = False
-
         truth_val = False
         while not truth_val:
+            hint_type = random.choices(
+                range(1, 16), weights=hint_weights, k=1)[0]
             if (hint_type == 1):
                 hint_type, log, truth_val, data = self.gen_1st_type()
             elif (hint_type == 2):

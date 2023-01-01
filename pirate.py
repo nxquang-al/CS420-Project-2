@@ -23,6 +23,7 @@ class Pirate:
 
     def set_pos(self, pos):
         self.cur_pos = pos
+        self.initial_pos = pos
 
     def reach_treasure(self):
         return np.array_equal(self.cur_pos, self.treasure_pos)

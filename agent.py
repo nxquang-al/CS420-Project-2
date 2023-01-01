@@ -11,6 +11,9 @@ class Agent:
         self.map_manager = game_manager.map_manager
         self.knowledge_map = np.ones(
             (game_manager.WIDTH, game_manager.HEIGHT), dtype=bool)
+        not_sea = np.where(self.map_manager.map == 0, False, True)
+        self.knowledge_map = np.logical_and(self.knowledge_map, not_sea)
+
         self.cur_pos = list(initial_pos)
         # (idx, hint_type, data)
         self.hints = []
@@ -51,6 +54,7 @@ class Agent:
             return True
         self.knowledge_map[top_left[0]:(
             bot_right[0]+1), top_left[1]:(bot_right[1]+1)] = 0
+        print(self.knowledge_map.astype(int).T)
         return False
 
     def large_scan(self) -> bool:
@@ -65,6 +69,7 @@ class Agent:
             return True
         self.knowledge_map[top_left[0]:(
             bot_right[0]+1), top_left[1]:(bot_right[1]+1)] = 0
+        print(self.knowledge_map.astype(int).T)
         return False
 
     def add_hint(self, idx, hint_type, data):
@@ -78,7 +83,8 @@ class Agent:
         binary_mask = None
         if hint_type == 1:
             # Hint type 1, data is an array of tiles do not contain treasure
-            binary_mask = arrayTiles_to_binaryMask(data, flip=True)
+            binary_mask = arrayTiles_to_binaryMask(
+                data, self.width, self.height, flip=True)
 
         elif hint_type in [2, 15]:
             # Hint type 2 and 15, data is list of regions
@@ -90,11 +96,13 @@ class Agent:
 
         elif hint_type == 4:
             # Hint type 4, data is an array of tiles
-            binary_mask = arrayTiles_to_binaryMask(data, flip=False)
+            binary_mask = arrayTiles_to_binaryMask(
+                data, self.width, self.height, flip=False)
 
         elif hint_type == 5:
             # Hint type 5, data is a rectangle does not contain treasure
-            binary_mask = arrayTiles_to_binaryMask(data, flip=True)
+            binary_mask = arrayTiles_to_binaryMask(
+                data, self.width, self.height, flip=True)
 
         elif hint_type == 6:
             pass
@@ -123,7 +131,8 @@ class Agent:
             bound_1, bound_2 = self.map_manager.get_two_regions_boundary(
                 rid_1, rid_2)
             array_of_tiles = np.concatenate((bound_1, bound_2), axis=0)
-            binary_mask = arrayTiles_to_binaryMask(array_of_tiles, flip=False)
+            binary_mask = arrayTiles_to_binaryMask(
+                array_of_tiles, self.width, self.height, flip=False)
 
         elif hint_type == 10:
             # Hint type 10, data is None
@@ -308,6 +317,8 @@ class Agent:
         else:
             # if pirate is free at this turn, agent tele to the position of pirate
             if can_tele:
+                print('>>><<<')
+                print("Pirate pos when tele: {}".format(pirate_cur_pos))
                 return (0, 4, pirate_cur_pos)
             # pirate has not moved yet
             if pirate_cur_pos == pirate_prev_pos:
@@ -347,7 +358,7 @@ def cal_manhattan_distance(from_pos, to_pos):
     return abs(from_pos[0] - to_pos[0]) + abs(from_pos[1] - to_pos[1])
 
 
-def arrayTiles_to_binaryMask(list_indices, flip=False):
+def arrayTiles_to_binaryMask(list_indices, width, height, flip=False):
     '''
     Convert list/array of tiles to a binary mask
     Return: a binary numpy array (sparse matrix)
@@ -357,7 +368,7 @@ def arrayTiles_to_binaryMask(list_indices, flip=False):
     data = np.ones(col.shape[0], dtype=bool)
 
     # Use scipy.coo_matrix to create a sparse matrix
-    mask = coo_matrix((data, (col, row)), shape=(16, 16)).toarray()
+    mask = coo_matrix((data, (col, row)), shape=(width, height)).toarray()
     if flip:
         mask = np.logical_not(mask)
     return mask

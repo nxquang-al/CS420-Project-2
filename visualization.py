@@ -199,18 +199,21 @@ class MapDisplay(tk.CTkFrame):
 
     def move_agent(self, x_des=5, y_des=5):
         self.agent_text_id = self.map.create_text((x_des+0.5)*self.cell_width,
-                                                (y_des+0.5)*self.cell_height,
-                                                text='A',
-                                                anchor="center",
-                                                font=("Roboto bold",
-                                                      self.cell_font_size),
-                                                fill="orange red")
+                                                  (y_des+0.5)*self.cell_height,
+                                                  text='A',
+                                                  anchor="center",
+                                                  font=("Roboto bold",
+                                                        self.cell_font_size),
+                                                  fill="orange red")
         self.agent_rec_id = self.map.create_rectangle((x_des+0.15)*self.cell_width,
-                                (y_des+0.15)*self.cell_height,
-                                (x_des+0.85)*self.cell_width,
-                                (y_des+0.85)*self.cell_height,
-                                # width=int(self.cell_width*0.75),
-                                fill="yellow")
+                                                      (y_des+0.15) *
+                                                      self.cell_height,
+                                                      (x_des+0.85) *
+                                                      self.cell_width,
+                                                      (y_des+0.85) *
+                                                      self.cell_height,
+                                                      # width=int(self.cell_width*0.75),
+                                                      fill="yellow")
 
         self.agent_pos.put(self.agent_text_id)
         self.agent_pos.put(self.agent_rec_id)
@@ -250,7 +253,7 @@ class MapDisplay(tk.CTkFrame):
                                        font=("Roboto bold",
                                              self.cell_font_size),
                                        fill=tile_colors.get(cell_type, "black"))
-        
+
         self.map.tag_raise(self.agent_rec_id)
         self.map.tag_raise(self.agent_text_id)
 
@@ -384,14 +387,14 @@ class RegionDisplay(tk.CTkFrame):
                                           height=self.canvas_height,
                                           bg="light grey")
         hint_tiles = tk.CTkCanvas(master=self, width=self.canvas_width,
-                                          height=self.canvas_height,
-                                          bg="gray16",
-                                          highlightbackground="red")
+                                  height=self.canvas_height,
+                                  bg="gray16",
+                                  highlightbackground="red")
         hint_tiles.create_text(self.canvas_width//2, self.canvas_height//2,
-                                   text="Hint",
-                                   anchor="center",
-                                   font=("Roboto bold", 16),
-                                   fill="gray90")
+                               text="Hint",
+                               anchor="center",
+                               font=("Roboto bold", 16),
+                               fill="gray90")
 
         no_treasure_region.grid(
             row=1, column=self.upper_region_count, padx=10, pady=10)
@@ -430,9 +433,9 @@ class NoteDisplay(tk.CTkFrame):
 
 if __name__ == "__main__":
 
-    game = Game(16, 16)
+    game = Game(48, 48)
     map = game.map_manager
-    map.generate_map()
+    # map.generate_map()
     (width, height) = map.get_map_shape()
 
     app = App(game=game, map_cols=width, map_rows=height)

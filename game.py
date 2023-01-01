@@ -36,7 +36,7 @@ class Game:
         self.hint_tiles = Queue()
 
         self.hint_weights = np.array(
-            [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 0, 0.5, 1])
+            [1, 1, 1, 1, 1, 0, 0.5, 1, 1, 1, 1, 0.5, 0, 0.5, 1])
 
         self.turn_idx = 0
         self.can_tele = True
@@ -105,7 +105,6 @@ class Game:
         # Init pirate pos here because it must be after the init of map (and prison)
         # print('Pirate cur pos: {}'.format(self.pirate.cur_pos))
         if self.pirate.cur_pos is None:
-            print("pirate set_pos")
             self.pirate.set_pos(self.map_manager.prisons[random.randint(
                 0, self.map_manager.num_prisons - 1)])
             self.pirate_prev_pos = self.pirate.cur_pos
@@ -119,11 +118,14 @@ class Game:
                 self.logs.put(
                     "The Pirate is at the prison {}".format(self.pirate.cur_pos))
                 self.hint_weights = np.array(
-                    [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 1])
+                    [1, 1, 1, 1, 1, 0, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 1])
 
             if self.turn_idx == self.pirate_freeTurn:
                 self.logs.put("The pirate is free")
+                self.hint_weights = np.array(
+                    [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 1])
                 self.pirate_isFree = True
+                self.pirate.find_shortest_path()
 
             if self.turn_idx == 1:
                 hint_type, log, truth, data = self.hint_manager.gen_first_hint(
@@ -184,18 +186,11 @@ class Game:
                 else:
                     # Treasure position is unknown
                     # Get action of the turn
-                    # print("Pirate_cur_pos: ".format(self.pirate.cur_pos))
-                    # print("Pirate_prev_pos: ".format(self.pirate_prev_pos))
-                    next_action = self.agent.get_action(self.pirate_isFree, self.can_tele,
-                                                        self.pirate.cur_pos, self.pirate_prev_pos)
+                    next_action = self.agent.get_action(
+                        self.pirate_isFree, self.can_tele, self.pirate.cur_pos, self.pirate_prev_pos)
                     if next_action[1] == 0:
                         # Verification
                         (idx, turn, mask) = next_action[2]
-                        print('=====')
-                        print("Truth index: {}".format(turn))
-                        print("Truth list length: {}".format(
-                            len(self.truth_list)))
-                        print('=====')
                         truth = self.truth_list[turn-1]
                         self.agent.verify(idx, truth, mask)
                         self.logs.put(
@@ -252,8 +247,8 @@ class Game:
                         self.agent.path.pop(0)
 
             if self.turn_idx >= self.pirate_freeTurn:
-                print('Pirate cur pos: {}'.format(self.pirate.cur_pos))
-                print('Pirate prev pos: {}'.format(self.pirate_prev_pos))
+                # print('Pirate cur pos: {}'.format(self.pirate.cur_pos))
+                # print('Pirate prev pos: {}'.format(self.pirate_prev_pos))
                 self.pirate_prev_pos = self.pirate.cur_pos
                 if not self.pirate.path.empty():
                     (move, log) = self.pirate.path.get()

@@ -29,6 +29,8 @@ class Map:
         # List of numpy array of adjacent regions
         self.adjacent_list = None
 
+        self.generate_map()
+
     def get_map_shape(self):
         return (self.width, self.height)
 
