@@ -37,9 +37,10 @@ class Map:
         beach_tiles = []
 
         for (x, y) in tiles:
-            if np.any(self.map[x-1:x+2, y-1:y+2] == 0):     # if the tile is near-sea
-                if self.is_movable((x, y)):
-                    beach_tiles.append((x, y))
+            if x > 0 and y > 0 and x < self.width - 1 and y < self.width - 1:
+                if np.any(self.map[x-1:x+2, y-1:y+2] == 0):     # if the tile is near-sea
+                    if self.is_movable((x, y)):
+                        beach_tiles.append((x, y))
         return random.choice(beach_tiles)
 
     def get_map_shape(self):
@@ -172,11 +173,11 @@ class Map:
                             current_size += 1
 
         # Randomize the number of mountains
-        self.num_mountain = random.randint(5, max(round(self.width/4), 5))
+        self.num_mountain = random.randint(max(5, self.width//2), max(self.width//1.5, 10))
 
         # Generate the mountains
         self.mountains = []
-        while len(self.mountains) < self.num_mountain:
+        while len(self.mountains) <= self.num_mountain:
            # Randomize the size of the mountain
             size = random.randint(3, max(round(self.width/4), 4))
 
@@ -205,6 +206,7 @@ class Map:
             # Add the mountain to the list
             for i in mountain:
                 self.mountains.append(i)
+            self.mountains = list(set(self.mountains))
 
         # Randomize the number of prisons
         self.num_prisons = random.randint(5, max(round(self.width/4), 5))
