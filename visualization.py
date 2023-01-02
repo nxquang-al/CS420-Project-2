@@ -436,7 +436,7 @@ class NoteDisplay(tk.CTkFrame):
 
 if __name__ == "__main__":
 
-    game = Game(48, 48)
+    game = Game(16, 16)
     map = game.map_manager
     # map.generate_map()
     (width, height) = map.get_map_shape()

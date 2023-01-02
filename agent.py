@@ -191,11 +191,11 @@ class Agent:
         if size == 3:
             col_0, row_0 = max(pos[0]-1, 0), max(pos[1]-1, 0)
             col_1, row_1 = min(pos[0]+1, self.width -
-                               1), min(pos[1]+1, self.height)
+                               1), min(pos[1]+1, self.height-1)
         else:
             col_0, row_0 = max(pos[0]-2, 0), max(pos[1]-2, 0)
             col_1, row_1 = min(pos[0]+2, self.width -
-                               1), min(pos[1]+2, self.height)
+                               1), min(pos[1]+2, self.height-1)
         region = self.knowledge_map[col_0:(col_1+1), row_0:(row_1+1)]
         h = np.count_nonzero(region)
         return h
@@ -320,8 +320,6 @@ class Agent:
         else:
             # if pirate is free at this turn, agent tele to the position of pirate
             if can_tele:
-                print('>>><<<')
-                print("Pirate pos when tele: {}".format(pirate_cur_pos))
                 return (0, 4, pirate_cur_pos)
             # pirate has not moved yet
             if pirate_cur_pos == pirate_prev_pos:
