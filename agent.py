@@ -39,8 +39,13 @@ class Agent:
 
     def move(self, move):
         (col, row) = move
+        self.cur_pos = list(self.cur_pos)
         self.cur_pos[0] += col
         self.cur_pos[1] += row
+        self.cur_pos = tuple(self.cur_pos)
+
+    def get_kb(self):
+        return self.knowledge_map
 
     def small_scan(self) -> bool:
         '''

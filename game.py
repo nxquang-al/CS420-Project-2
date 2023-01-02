@@ -18,15 +18,15 @@ class Game:
         self.pirate = Pirate(map=self.map_manager,
                              treasure_pos=self.map_manager.treasure_pos)
 
-        x = random.randint(self.WIDTH//5, self.WIDTH//2 + self.WIDTH//5)
-
-        self.agent_pos = (x, x)
+        self.agent_pos = self.map_manager.gen_agent_pos()
         self.agent = Agent(game_manager=self, initial_pos=self.agent_pos)
         self.known_treasure = False
 
-        self.prison_revealTurn = random.randint(2, 4)
+        # self.prison_revealTurn = random.randint(2, 4)
+        self.prison_revealTurn = 1
         # To ensure prirate is free after prison's position is revealed
-        self.pirate_freeTurn = int(4+0.2*self.WIDTH)
+        # self.pirate_freeTurn = int(4+0.2*self.WIDTH)
+        self.pirate_freeTurn = 2
         self.pirate_prev_pos = None
 
         # To be passed into LogDisplay of visualization.py
@@ -44,12 +44,8 @@ class Game:
         self.can_tele = True
         self.pirate_isFree = False
         self.is_win = False
-        # self.logs.append('Game start')
-        # self.logs.append('Agent appears at {}}'.format(self.agent_pos))
-        # self.logs.append('The pirate\'s will be revealed at the beginning of turn {}'.format(
-        #     self.prison_revealTurn))
-        # self.logs.append('The pirate will be free at the beginning of turn {}'.format(
-        #     self.pirate_freeTurn))
+        self.is_lose = False
+
 
     def is_movable(self, pos):
         return self.map_manager.is_movable(pos)
@@ -57,20 +53,15 @@ class Game:
     def scan_rectangle(self, top_left, bot_right):
         return self.map_manager.check_rectangle_region(top_left, bot_right)
 
-    def gen_agent_pos(self):
-        while True:
-            pos = (random.randint(0, self.WIDTH-4),
-                   random.randint(0, self.HEIGHT-4))
-            if self.is_movable(pos):
-                self.agent_pos = pos
-                break
-
     def get_agent_pos(self):
         return self.agent.cur_pos
 
+    def get_pirate_pos(self):
+        return self.pirate.cur_pos, self.turn_idx >= self.pirate_freeTurn
+
     def log_init(self):
         self.logs.put('Game start')
-        self.logs.put('Agent appears at {}}'.format(self.agent_pos))
+        self.logs.put('Agent appears at {}'.format(self.agent_pos))
         self.logs.put('The pirate\'s will be revealed at the beginning of turn {}'.format(
             self.prison_revealTurn))
         self.logs.put('The pirate will be free at the beginning of turn {}'.format(
@@ -87,7 +78,7 @@ class Game:
             log_content += f"> {log}\n"
             self.full_logs.append(log)
 
-        return log_content  # String
+        return log_content # String
 
     def pass_hint_tiles(self):
         hint_tiles = []
@@ -103,6 +94,9 @@ class Game:
             self.scan_area = [(i, j) for i in range(x-1, x+2) for j in range(y-1, y+2)]
         else:
             self.scan_area = [(i, j) for i in range(x-2, x+3) for j in range(y-2, y+3)]
+    
+    def get_kb(self):
+        return self.agent.get_kb()
     
     def pass_scan_area(self):
         return self.scan_area
@@ -214,7 +208,7 @@ class Game:
                     elif next_action[1] == 1:
                         # Move 1-2 tiles and small scan
                         next_move = next_action[2]
-                        prev_pos = self.agent.cur_pos
+                        prev_pos = self.agent.cur_pos[:]
                         self.agent.move(next_move)
                         self.logs.put('Agent moves a small steps from {} to {} and takes a small scan'.format(
                             prev_pos, self.agent.cur_pos))
@@ -265,9 +259,11 @@ class Game:
                 if not self.pirate.path.empty():
                     (move, log) = self.pirate.path.get()
                     self.logs.put(log)
+                    self.pirate.set_pos(move.tolist() if isinstance(move, np.ndarray) else list(move))
 
             if self.pirate.reach_treasure():
                 self.logs.put('LOSE')
+                self.is_lose = True
 
     def run(self):
         # self.turn_idx = 0

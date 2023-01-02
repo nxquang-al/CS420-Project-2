@@ -3,7 +3,6 @@ from scipy.ndimage import binary_dilation
 import random
 import math
 
-
 class Map:
     '''
         This class will manage everything related to map
@@ -30,6 +29,18 @@ class Map:
         self.adjacent_list = None
 
         self.generate_map()
+
+    def gen_agent_pos(self):
+        init_region = random.randint(1, self.num_regions)
+        tiles = self.get_region_boundary(init_region)[0]
+
+        beach_tiles = []
+
+        for (x, y) in tiles:
+            if np.any(self.map[x-1:x+2, y-1:y+2] == 0):     # if the tile is near-sea
+                if self.is_movable((x, y)):
+                    beach_tiles.append((x, y))
+        return random.choice(beach_tiles)
 
     def get_map_shape(self):
         return (self.width, self.height)
@@ -406,7 +417,7 @@ class Map:
         '''
         if pos[0] < 0 or pos[0] >= self.width or pos[1] < 0 or pos[1] >= self.height:
             return False
-        return self.map[pos] != 0 and (pos not in self.mountains)
+        return self.map[pos] != 0 and pos not in self.mountains
 
     def check_column(self, col_idx):
         '''
