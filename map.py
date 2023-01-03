@@ -9,7 +9,7 @@ class Map:
         This class will manage everything related to map
     '''
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, data=None):
         self.width = width
         self.height = height
         self.map = np.zeros((width, height))
@@ -22,14 +22,41 @@ class Map:
         # Numpy array of prisons array([p1, p2, p3,...])
         self.prisons = None
 
-        self.input_region = random.randint(
-            5, min(self.width, 7))  # including sea
-        self.num_regions = self.input_region - 1  # number of lands
-
         # List of numpy array of adjacent regions
         self.adjacent_list = None
 
-        self.generate_map()
+        if data is None:
+            self.input_region = random.randint(
+                5, min(self.width, 7))  # including sea
+            self.num_regions = self.input_region - 1  # number of lands
+            self.generate_map()
+        else:
+            self.map, self.mountains, self.prisons, self.num_regions, self.treasure_pos = data
+            self.num_regions -= 1       # Number of regions without sea
+            self.num_mountain = len(self.mountains)
+            self.num_prisons = len(self.prisons)
+            self.adjacent_list = self.get_neighbors()
+
+    def gen_agent_pos(self):
+        init_region = random.randint(1, self.num_regions)
+        tiles = self.get_region_boundary(init_region)[0]
+
+        beach_tiles = []
+
+        for (x, y) in tiles:
+            if x > 0 and y > 0 and x < self.width - 1 and y < self.width - 1:
+                if np.any(self.map[x-1:x+2, y-1:y+2] == 0):     # if the tile is near-sea
+                    if self.is_movable((x, y)):
+                        beach_tiles.append((x, y))
+        if beach_tiles:
+            return random.choice(beach_tiles)
+        else:
+            is_legal = False
+            while not is_legal:
+                x = random.randint(0, self.width)
+                y = random.randint(0, self.height)
+                is_legal = self.is_movable((x, y))
+            return (x, y)
 
     def get_map_shape(self):
         return (self.width, self.height)
@@ -161,11 +188,12 @@ class Map:
                             current_size += 1
 
         # Randomize the number of mountains
-        self.num_mountain = random.randint(5, max(round(self.width/4), 5))
+        self.num_mountain = random.randint(
+            max(5, self.width//2), max(self.width//1.5, 10))
 
         # Generate the mountains
         self.mountains = []
-        while len(self.mountains) < self.num_mountain:
+        while len(self.mountains) <= self.num_mountain:
            # Randomize the size of the mountain
             size = random.randint(3, max(round(self.width/4), 4))
 
@@ -194,6 +222,7 @@ class Map:
             # Add the mountain to the list
             for i in mountain:
                 self.mountains.append(i)
+            self.mountains = list(set(self.mountains))
 
         # Randomize the number of prisons
         self.num_prisons = random.randint(5, max(round(self.width/4), 5))
@@ -263,7 +292,6 @@ class Map:
 
         # Get list of neighbors for each regions
         self.adjacent_list = self.get_neighbors()
-        print('Adjacent list: {}'.format(self.adjacent_list))
 
         # Initialize the output map
         output_map = np.empty((self.width, self.height), dtype='object')
@@ -406,7 +434,7 @@ class Map:
         '''
         if pos[0] < 0 or pos[0] >= self.width or pos[1] < 0 or pos[1] >= self.height:
             return False
-        return self.map[pos] != 0 and (pos not in self.mountains)
+        return (self.map[pos] != 0) & (tuple(pos) not in self.mountains)
 
     def check_column(self, col_idx):
         '''
@@ -534,9 +562,6 @@ class Map:
     def get_mountain_region(self):
         # get the list of regions which have mountain
         list_regions = [self.map[idx] for idx in self.mountains]
-        print('======')
-        print('List regions having mountains: {}'.format(list_regions))
-        print('======')
         return np.unique(list_regions)
 
     def check_region(self, list_regions):

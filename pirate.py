@@ -122,7 +122,7 @@ class Pirate:
 
     def get_log(self, cur_move):
         # [prev_x, prev_y, next_x, next_y, direction, num_tiles, path_cost, heuristics]
-        cur_pos = cur_move[2:4]
+        self.cur_pos = cur_move[2:4]
         direction = cur_move[4]
         num_tiles = cur_move[5]
         if direction == 0:
@@ -150,8 +150,9 @@ class Pirate:
         elif direction == 11:
             log = "The pirate moves 1 step to the east and then 1 step to the south."
         else:
-            log = "The pirate is at the {} prison. The pirate is free".format(
-                cur_pos)
+            # log = "The pirate is at the {} prison. The pirate is free".format(
+            #     cur_pos)
+            log = ""
         return log
 
     def find_shortest_path(self):

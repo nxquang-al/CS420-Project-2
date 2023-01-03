@@ -1,68 +1,72 @@
-import sys
-import math
+from utils import read_input_file
+# import sys
+# import math
 
-def parse_grid(grid_string):
-    # Split string into rows
-    rows = grid_string.strip().split("\n")
 
-    # Split rows into cells
-    cells = [row.split() for row in rows]
+# def parse_grid(grid_string):
+#     # Split string into rows
+#     rows = grid_string.strip().split("\n")
 
-    # Convert cells to integers
-    return [[int(cell.strip("MTP")) for cell in row] for row in cells]
+#     # Split rows into cells
+#     cells = [row.split() for row in rows]
 
-def visualize_grid(grid, n):
-    # Map values to colors
-    colors = {
-        0: "\033[34m",  # blue
-        1: "\033[33m",  # yellow
-        2: "\033[31m",  # red
-        3: "\033[37m",  # brown
-        4: "\033[32m",  # green
-        5: "\033[30m",  # green
-        6: "\033[35m",  # green
-    }
+#     # Convert cells to integers
+#     return [[int(cell.strip("MTP")) for cell in row] for row in cells]
 
-    # Initialize visualization as a list of empty strings
-    vis = ["" for i in range(n)]
 
-    # Iterate over rows and columns
-    for i in range(n):
-        for j in range(n):
-            # Get color for value
-            color = colors.get(grid[i][j], "\033[35m")  # purple for other values
+# def visualize_grid(grid, n):
+#     # Map values to colors
+#     colors = {
+#         0: "\033[34m",  # blue
+#         1: "\033[33m",  # yellow
+#         2: "\033[31m",  # red
+#         3: "\033[37m",  # brown
+#         4: "\033[32m",  # green
+#         5: "\033[30m",  # green
+#         6: "\033[35m",  # green
+#     }
 
-            # Append colored character to visualization
-            vis[i] += color + str(grid[i][j]) + "\033[0m"
+#     # Initialize visualization as a list of empty strings
+#     vis = ["" for i in range(n)]
 
-    # Join rows of visualization into a single string
-    return "\n".join(vis)
+#     # Iterate over rows and columns
+#     for i in range(n):
+#         for j in range(n):
+#             # Get color for value
+#             # purple for other values
+#             color = colors.get(grid[i][j], "\033[35m")
 
-# Example usage
-# Example usage
-grid_string = """
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 0 1 1M 1 1 1 2 2 2 0 0 0
-0 0 0 0 1 1M 1 1 1 2 2M 2 2 0 0 0
-0 0 0 0 1 1 1 1 1 2 2 2 2 0 0 0
-0 0 0 0 1 1 1 1 1 2 2 2 2M 0 0 0
-0 0 0 0 1 1 1 1 1T 2 2 2 2 0 0 0
-0 0 0 0 1 1 1 1 1 2 2 2 2 0 0 0
-0 0 0 0 0 0 0 0 0 2 2 2 2 0 0 0
-0 0 0 0 0 0 0 0 0 2 2 2M 2 0 0 0
-0 0 0 0 0 0 0 0 0 2 2 2 2M 0 0 0
-0 0 0 0 0 3 3M 3 3 3 4 4 4 0 0 0
-0 0 0 0 3 3 3 3 3 4 4 4 4 0 0 0
-0 0 0 0 3 3 3 3 3 4 4 4 4 0 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-"""
+#             # Append colored character to visualization
+#             vis[i] += color + str(grid[i][j]) + "\033[0m"
 
-grid = parse_grid(grid_string)
+#     # Join rows of visualization into a single string
+#     return "\n".join(vis)
 
-print(visualize_grid(grid, 16))
 
+# # Example usage
+# # Example usage
+# grid_string = """
+# 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# 0 0 0 0 0 1 1M 1 1 1 2 2 2 0 0 0
+# 0 0 0 0 1 1M 1 1 1 2 2M 2 2 0 0 0
+# 0 0 0 0 1 1 1 1 1 2 2 2 2 0 0 0
+# 0 0 0 0 1 1 1 1 1 2 2 2 2M 0 0 0
+# 0 0 0 0 1 1 1 1 1T 2 2 2 2 0 0 0
+# 0 0 0 0 1 1 1 1 1 2 2 2 2 0 0 0
+# 0 0 0 0 0 0 0 0 0 2 2 2 2 0 0 0
+# 0 0 0 0 0 0 0 0 0 2 2 2M 2 0 0 0
+# 0 0 0 0 0 0 0 0 0 2 2 2 2M 0 0 0
+# 0 0 0 0 0 3 3M 3 3 3 4 4 4 0 0 0
+# 0 0 0 0 3 3 3 3 3 4 4 4 4 0 0 0
+# 0 0 0 0 3 3 3 3 3 4 4 4 4 0 0 0
+# 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# """
+
+# grid = parse_grid(grid_string)
+
+# print(visualize_grid(grid, 16))
 
 
 # nd = 8
@@ -88,3 +92,8 @@ print(visualize_grid(grid, 16))
 #     x = region_x + region_side_length // 2 + 1
 #     y = region_y + (region_side_length // 2) * (region % 2) + 1
 #     print(f"Region {region}: ({x}, {y})")
+
+
+file_path = 'data/input/MAP_01.txt'
+data = read_input_file(file_path)
+print(data)

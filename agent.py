@@ -29,7 +29,7 @@ class Agent:
         return
 
     def teleport(self, pos):
-        if not self.game_manager.is_movable(pos):
+        if not self.game_manager.is_movable(tuple(pos)):
             return False
         self.cur_pos = pos
         return True
@@ -39,8 +39,13 @@ class Agent:
 
     def move(self, move):
         (col, row) = move
+        self.cur_pos = list(self.cur_pos)
         self.cur_pos[0] += col
         self.cur_pos[1] += row
+        self.cur_pos = tuple(self.cur_pos)
+
+    def get_kb(self):
+        return self.knowledge_map
 
     def small_scan(self) -> bool:
         '''
@@ -184,7 +189,6 @@ class Agent:
     def update_knowledge(self, mask):
         assert mask.shape == self.knowledge_map.shape
         self.knowledge_map = np.logical_and(self.knowledge_map, mask)
-        print(self.knowledge_map.astype(int).T)
         return self.knowledge_map
 
     def cal_heuristic(self, pos, size=3):
@@ -331,8 +335,8 @@ class Agent:
         paths = [[self.cur_pos]]
         visited = [self.cur_pos]
 
-        while self.paths:
-            path = self.paths.pop(0)
+        while paths:
+            path = paths.pop(0)
             if path[-1] == self.map_manager.treasure_pos:
                 self.path = path
                 return self.path

@@ -1,0 +1,42 @@
+40
+WIN
+> Game start
+> Agent appears at (9, 5)
+> The pirate's will be revealed at the beginning of turn 4
+> The pirate will be free at the beginning of turn 8
+> START TURN 1
+> HINT 1: A small rectangle area doesn't has the treasure. Top-Left-Bottom-Right = [2, 2, 13, 10]
+> ADD HINT 1 TO HINT LIST
+> HINT 1: is_verified = TRUE, is_truth = TRUE
+> Agent moves a large steps from [9, 5] to (9, 9)
+> Agent moves a small steps from (9, 9) to (9, 11) and takes a small scan
+> START TURN 2
+> HINT 2: Column 12 contains the treasure
+> ADD HINT 2 TO HINT LIST
+> Agent moves a small steps from (9, 11) to (7, 11) and takes a small scan
+> Agent moves a small steps from (7, 11) to (5, 11) and takes a small scan
+> START TURN 3
+> HINT 3: A list of tiles [[15 13], [4 6], [5 3], [7 2], [0 1], [13  8], [10  4], [8 5], [13  7], [ 9 10]] doesn't contain the treasure
+> ADD HINT 3 TO HINT LIST
+> Agent has verified the hint 3, it is True!!
+> HINT 3: is_verified = TRUE, is_truth = True
+> Agent moves a small steps from (5, 11) to (3, 11) and takes a small scan
+> START TURN 4
+> The Pirate is at the prison (10, 3)
+> HINT 4: Row 12 does not contain the treasure
+> ADD HINT 4 TO HINT LIST
+> Agent moves a small steps from (3, 11) to (3, 13) and takes a small scan
+> Agent has verified the hint 4, it is True!!
+> HINT 4: is_verified = TRUE, is_truth = True
+> START TURN 5
+> HINT 5: The treasure is somewhere in an area bounded by 2 tiles from sea
+> ADD HINT 5 TO HINT LIST
+> Agent has verified the hint 5, it is False!!
+> HINT 5: is_verified = TRUE, is_truth = False
+> Agent moves a large steps from (3, 13) to (7, 13)
+> START TURN 6
+> HINT 6: The treasure is in one of the regions 0, 1, 2 which have mountain
+> ADD HINT 6 TO HINT LIST
+> Agent moves a large steps from (7, 13) to (11, 13)
+> Agent moves a small steps from (11, 13) to (11, 11) and takes a small scan
+> WIN
