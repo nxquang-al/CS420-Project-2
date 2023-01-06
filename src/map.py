@@ -27,7 +27,7 @@ class Map:
 
         if data is None:
             self.input_region = random.randint(
-                5, min(self.width, 7))  # including sea
+                5, min(self.width, 9))  # including sea
             self.num_regions = self.input_region - 1  # number of lands
             self.generate_map()
         else:
@@ -57,6 +57,9 @@ class Map:
                 y = random.randint(0, self.height)
                 is_legal = self.is_movable((x, y))
             return (x, y)
+
+    def wrap_map_data(self):
+        return [self.width, self.height, self.map, self.mountains, self.prisons, self.num_regions+1, self.treasure_pos]
 
     def get_map_shape(self):
         return (self.width, self.height)

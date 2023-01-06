@@ -6,11 +6,12 @@ import numpy as np
 import random
 import math
 import argparse
+import os
 
 from map import Map
 from queue import Queue
 from game import Game
-from utils import read_input_file, write_logs_file
+from utils import read_input_file, write_logs_file, write_map_file
 
 '''
     DO NOT RUN THIS FILE WITH ANACONDA ENVIRONMENT.
@@ -127,12 +128,12 @@ class App(tk.CTk):
             f"Note content {self.count}")
 
         agent_pos = self.game.get_agent_pos()
-        print(f"Agent pos: {agent_pos}")
+        # print(f"Agent pos: {agent_pos}")
 
         pirate_pos, pirate_is_free = self.game.get_pirate_pos()
         if pirate_is_free:
             self.map_display.move_pirate(pirate_pos[0], pirate_pos[1])
-            print(f"Pirate pos: {pirate_pos}")
+            # print(f"Pirate pos: {pirate_pos}")
 
         # self.map_display.move_agent()
         self.map_display.move_agent(agent_pos[0], agent_pos[1])
@@ -524,15 +525,26 @@ if __name__ == "__main__":
     game = None
     input_mode = 0
     file_path = ''
+    id_testcase = ''
     if args.read is not None:
         file_path = args.read[0]
         input_data = read_input_file(file_path)
         game = Game(input_data)
+
     elif args.generate is not None:
         input_mode = 1
         width = args.generate[0]
         height = args.generate[1]
         game = Game(input_data=[width, height])
+        data = game.wrap_map_data()
+        for i in range(1, 1000):
+            if i < 10:
+                id_testcase = '0' + str(i)
+            else:
+                id_testcase = str(i)
+            if not os.path.exists('data/input/MAP_'+id_testcase + '.txt'):
+                write_map_file(file_name='MAP_'+id_testcase+'.txt', data=data)
+                break
 
     # game = Game(32, 32)
     map = game.map_manager
@@ -555,4 +567,6 @@ if __name__ == "__main__":
     if input_mode == 0:
         id_testcase = file_path[-6:-4]
         file_name = 'LOG_' + id_testcase + '.txt'
-        write_logs_file(file_name=file_name, logs=game.full_logs)
+    else:
+        file_name = 'LOG_' + id_testcase + '.txt'
+    write_logs_file(file_name=file_name, logs=game.full_logs)

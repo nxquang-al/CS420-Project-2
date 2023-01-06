@@ -1,0 +1,52 @@
+50
+WIN
+> Game start
+> Agent appears at (29, 9)
+> The pirate's will be revealed at the beginning of turn 4
+> The pirate will be free at the beginning of turn 10
+> START TURN 1
+> HINT 1: Column 23 and row 18 do not contain the treasure
+> ADD HINT 1 TO HINT LIST
+> HINT 1: is_verified = TRUE, is_truth = TRUE
+> Agent takes a large scan
+> Agent moves a small steps from [29, 9] to (27, 9) and takes a small scan
+> START TURN 2
+> HINT 2: The treasure is somewhere in an area bounded by 2 tiles from sea
+> ADD HINT 2 TO HINT LIST
+> Agent moves a small steps from (27, 9) to (25, 9) and takes a small scan
+> Agent moves a small steps from (25, 9) to (25, 11) and takes a small scan
+> START TURN 3
+> HINT 3: A large rectangle area has the treasure. Top-Left-Bottom-Right = [0, 6, 27, 26]
+> ADD HINT 3 TO HINT LIST
+> Agent has verified the hint 3, it is True!!
+> HINT 3: is_verified = TRUE, is_truth = True
+> Agent moves a small steps from (25, 11) to (25, 13) and takes a small scan
+> START TURN 4
+> The Pirate is at the prison (8, 9)
+> HINT 4: A large rectangle area has the treasure. Top-Left-Bottom-Right = [4, 5, 30, 28]
+> ADD HINT 4 TO HINT LIST
+> Agent has verified the hint 4, it is False!!
+> HINT 4: is_verified = TRUE, is_truth = False
+> Agent has verified the hint 2, it is True!!
+> HINT 2: is_verified = TRUE, is_truth = True
+> START TURN 5
+> HINT 5: The treasure is somewhere in the gap between 2 squares: S1 = [1, 0, 20, 30], S2 = [2, 7, 10, 29]
+> ADD HINT 5 TO HINT LIST
+> Agent has verified the hint 5, it is False!!
+> HINT 5: is_verified = TRUE, is_truth = False
+> Agent moves a large steps from (25, 13) to (21, 13)
+> START TURN 6
+> HINT 6: Treasure is somewhere in the boundary of regions 2 and 4.
+> ADD HINT 6 TO HINT LIST
+> Agent moves a large steps from (21, 13) to (17, 13)
+> Agent moves a large steps from (17, 13) to (13, 13)
+> START TURN 7
+> HINT 7: Treasure is in the North-East of the pirate's position (8, 9)
+> ADD HINT 7 TO HINT LIST
+> Agent moves a large steps from (13, 13) to (9, 13)
+> Agent moves a large steps from (9, 13) to (5, 13)
+> START TURN 8
+> HINT 8: Treasure is in the South-East of the pirate's position (8, 9)
+> ADD HINT 8 TO HINT LIST
+> Agent moves a small steps from (5, 13) to (3, 13) and takes a small scan
+> WIN

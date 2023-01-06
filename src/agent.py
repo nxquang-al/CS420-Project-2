@@ -207,9 +207,11 @@ class Agent:
     def cal_dist_to_mean(self, pos, knowledge_map):
         col, row = np.where(knowledge_map == 1)
         count = col.shape[0]
+        if count == 0:
+            return 999999
         sum_col = np.sum(col, axis=0)
         sum_row = np.sum(row, axis=0)
-        return cal_manhattan_distance(pos, (sum_col/count, sum_row/count))
+        return cal_manhattan_distance(tuple(pos), (sum_col/count, sum_row/count))
 
     def get_best_action(self, knowledge):
         actions = []

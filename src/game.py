@@ -65,6 +65,12 @@ class Game:
     def get_pirate_pos(self):
         return self.pirate.cur_pos, self.turn_idx >= self.pirate_freeTurn
 
+    def wrap_map_data(self):
+        data = self.map_manager.wrap_map_data()
+        data.append(self.prison_revealTurn)
+        data.append(self.pirate_freeTurn)
+        return data
+
     def log_init(self):
         self.logs.put('Game start')
         self.logs.put('Agent appears at {}'.format(self.agent_pos))
@@ -137,6 +143,7 @@ class Game:
                     [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 1])
                 self.pirate_isFree = True
                 self.pirate.find_shortest_path()
+                self.pirate.path.get()
 
             if self.turn_idx == 1:
                 hint_type, log, truth, data = self.hint_manager.gen_first_hint(

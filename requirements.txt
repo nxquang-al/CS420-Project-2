@@ -1,4 +1,4 @@
 numpy==1.23.5
-scipy
-customtkinter
-sv-ttk
+scipy==1.9.3
+customtkinter==5.0.3
+sv-ttk==2.4

@@ -1,42 +1,184 @@
-40
+182
 WIN
 > Game start
-> Agent appears at (9, 5)
-> The pirate's will be revealed at the beginning of turn 4
-> The pirate will be free at the beginning of turn 8
+> Agent appears at (3, 43)
+> The pirate's will be revealed at the beginning of turn 2
+> The pirate will be free at the beginning of turn 14
 > START TURN 1
-> HINT 1: A small rectangle area doesn't has the treasure. Top-Left-Bottom-Right = [2, 2, 13, 10]
+> HINT 1: A list of tiles [[15  1], [30  8], [27  5], [18 32], [56 26], [10 61], [32 61], [17 48], [ 8 41], [37 25], [56 27], [24 51]] doesn't contain the treasure
 > ADD HINT 1 TO HINT LIST
 > HINT 1: is_verified = TRUE, is_truth = TRUE
-> Agent moves a large steps from [9, 5] to (9, 9)
-> Agent moves a small steps from (9, 9) to (9, 11) and takes a small scan
+> Agent takes a large scan
+> Agent moves a small steps from [3, 43] to (5, 43) and takes a small scan
 > START TURN 2
-> HINT 2: Column 12 contains the treasure
+> The Pirate is at the prison (43, 43)
+> HINT 2: The treasure is somewhere in a boundary of 2 regions
 > ADD HINT 2 TO HINT LIST
-> Agent moves a small steps from (9, 11) to (7, 11) and takes a small scan
-> Agent moves a small steps from (7, 11) to (5, 11) and takes a small scan
+> Agent moves a small steps from (5, 43) to (7, 43) and takes a small scan
+> Agent moves a small steps from (7, 43) to (9, 43) and takes a small scan
 > START TURN 3
-> HINT 3: A list of tiles [[15 13], [4 6], [5 3], [7 2], [0 1], [13  8], [10  4], [8 5], [13  7], [ 9 10]] doesn't contain the treasure
+> HINT 3: Row 30 does not contain the treasure
 > ADD HINT 3 TO HINT LIST
 > Agent has verified the hint 3, it is True!!
 > HINT 3: is_verified = TRUE, is_truth = True
-> Agent moves a small steps from (5, 11) to (3, 11) and takes a small scan
+> Agent takes a large scan
 > START TURN 4
-> The Pirate is at the prison (10, 3)
-> HINT 4: Row 12 does not contain the treasure
+> HINT 4: A small rectangle area doesn't has the treasure. Top-Left-Bottom-Right = [14, 11, 42, 52]
 > ADD HINT 4 TO HINT LIST
-> Agent moves a small steps from (3, 11) to (3, 13) and takes a small scan
-> Agent has verified the hint 4, it is True!!
-> HINT 4: is_verified = TRUE, is_truth = True
+> Agent has verified the hint 4, it is False!!
+> HINT 4: is_verified = TRUE, is_truth = False
+> Agent has verified the hint 2, it is True!!
+> HINT 2: is_verified = TRUE, is_truth = True
 > START TURN 5
-> HINT 5: The treasure is somewhere in an area bounded by 2 tiles from sea
+> HINT 5: A large rectangle area has the treasure. Top-Left-Bottom-Right = [6, 6, 48, 62]
 > ADD HINT 5 TO HINT LIST
-> Agent has verified the hint 5, it is False!!
-> HINT 5: is_verified = TRUE, is_truth = False
-> Agent moves a large steps from (3, 13) to (7, 13)
+> Agent has verified the hint 5, it is True!!
+> HINT 5: is_verified = TRUE, is_truth = True
+> Agent moves a large steps from (9, 43) to (13, 43)
 > START TURN 6
-> HINT 6: The treasure is in one of the regions 0, 1, 2 which have mountain
+> HINT 6: A list of tiles [[32 27]] doesn't contain the treasure
 > ADD HINT 6 TO HINT LIST
-> Agent moves a large steps from (7, 13) to (11, 13)
-> Agent moves a small steps from (11, 13) to (11, 11) and takes a small scan
+> Agent has verified the hint 6, it is True!!
+> HINT 6: is_verified = TRUE, is_truth = True
+> Agent moves a large steps from (13, 43) to (17, 43)
+> START TURN 7
+> HINT 7: Regions 1 do not contain the treasure
+> ADD HINT 7 TO HINT LIST
+> Agent has verified the hint 7, it is False!!
+> HINT 7: is_verified = TRUE, is_truth = False
+> Agent moves a large steps from (17, 43) to (21, 43)
+> START TURN 8
+> HINT 8: One of the regions 4, 2 has the treasure
+> ADD HINT 8 TO HINT LIST
+> Agent moves a large steps from (21, 43) to (25, 43)
+> Agent moves a large steps from (25, 43) to (25, 39)
+> START TURN 9
+> HINT 9: The treasure is somewhere in a boundary of 2 regions
+> ADD HINT 9 TO HINT LIST
+> Agent moves a large steps from (25, 39) to (25, 35)
+> Agent has verified the hint 9, it is True!!
+> HINT 9: is_verified = TRUE, is_truth = True
+> START TURN 10
+> HINT 10: The treasure is somewhere in a boundary of 2 regions
+> ADD HINT 10 TO HINT LIST
+> Agent has verified the hint 10, it is True!!
+> HINT 10: is_verified = TRUE, is_truth = True
+> Agent moves a small steps from (25, 35) to (25, 33) and takes a small scan
+> START TURN 11
+> HINT 11: Row 17 does not contain the treasure
+> ADD HINT 11 TO HINT LIST
+> Agent has verified the hint 11, it is True!!
+> HINT 11: is_verified = TRUE, is_truth = True
+> Agent moves a small steps from (25, 33) to (27, 33) and takes a small scan
+> START TURN 12
+> HINT 12: A large rectangle area has the treasure. Top-Left-Bottom-Right = [15, 18, 62, 62]
+> ADD HINT 12 TO HINT LIST
+> Agent moves a large steps from (27, 33) to (27, 29)
+> Agent has verified the hint 12, it is True!!
+> HINT 12: is_verified = TRUE, is_truth = True
+> START TURN 13
+> HINT 13: Regions 3 do not contain the treasure
+> ADD HINT 13 TO HINT LIST
+> Agent has verified the hint 13, it is True!!
+> HINT 13: is_verified = TRUE, is_truth = True
+> Agent moves a small steps from (27, 29) to (27, 28) and takes a small scan
+> START TURN 14
+> The pirate is free
+> HINT 14: The agent is nearer than the pirate to the treasure
+> ADD HINT 14 TO HINT LIST
+> The pirate moves 2 steps to the north.
+> Agent teleports to tiles [43, 41]
+> Agent moves a large steps from [43, 41] to (43, 37)
+> Agent moves a large steps from (43, 37) to (39, 37)
+> START TURN 15
+> HINT 15: The treasure is somewhere in an area bounded by 2 tiles from sea
+> ADD HINT 15 TO HINT LIST
+> The pirate moves 2 steps to the north.
+> Agent moves a large steps from (39, 37) to (35, 37)
+> Agent moves a large steps from (35, 37) to (31, 37)
+> START TURN 16
+> HINT 16: The treasure is somewhere in an area bounded by 2 tiles from sea
+> ADD HINT 16 TO HINT LIST
+> The pirate moves 2 steps to the north.
+> Agent moves a large steps from (31, 37) to (27, 37)
+> Agent moves a large steps from (27, 37) to (27, 33)
+> START TURN 17
+> HINT 17: Row 48 contains the treasure
+> ADD HINT 17 TO HINT LIST
+> The pirate moves 2 steps to the north.
+> Agent moves a large steps from (27, 33) to (27, 29)
+> Agent moves a large steps from (27, 29) to (24, 29)
+> START TURN 18
+> HINT 18: A list of tiles [[47 30], [24 61], [ 5 50], [38 60], [44 36], [23  9], [11 60]] doesn't contain the treasure
+> ADD HINT 18 TO HINT LIST
+> The pirate moves 2 steps to the north.
+> Agent moves a small steps from (24, 29) to (24, 28) and takes a small scan
+> Agent moves a small steps from (24, 28) to (24, 27) and takes a small scan
+> START TURN 19
+> HINT 19: The treasure is somewhere in an area bounded by 2 tiles from sea
+> ADD HINT 19 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent moves a small steps from (24, 27) to (24, 28) and takes a small scan
+> Agent moves a small steps from (24, 28) to (24, 27) and takes a small scan
+> START TURN 20
+> HINT 20: The treasure is somewhere in an area bounded by 3 tiles from sea
+> ADD HINT 20 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent moves a small steps from (24, 27) to (24, 28) and takes a small scan
+> Agent moves a small steps from (24, 28) to (24, 27) and takes a small scan
+> START TURN 21
+> HINT 21: The treasure is somewhere in an area bounded by 2 tiles from sea
+> ADD HINT 21 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent has verified the hint 18, it is True!!
+> HINT 18: is_verified = TRUE, is_truth = True
+> Agent moves a small steps from (24, 27) to (24, 28) and takes a small scan
+> START TURN 22
+> HINT 22: Column 0 contains the treasure
+> ADD HINT 22 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent moves a small steps from (24, 28) to (24, 27) and takes a small scan
+> Agent moves a small steps from (24, 27) to (24, 28) and takes a small scan
+> START TURN 23
+> HINT 23: Regions 2, 1 do not contain the treasure
+> ADD HINT 23 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent moves a small steps from (24, 28) to (24, 27) and takes a small scan
+> Agent moves a small steps from (24, 27) to (24, 28) and takes a small scan
+> START TURN 24
+> HINT 24: Treasure is in the North of the pirate's position [33, 33]
+> ADD HINT 24 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent moves a small steps from (24, 28) to (24, 27) and takes a small scan
+> Agent moves a small steps from (24, 27) to (24, 28) and takes a small scan
+> START TURN 25
+> HINT 25: The top half of the map does not contains treasure
+> ADD HINT 25 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent moves a small steps from (24, 28) to (24, 27) and takes a small scan
+> Agent moves a small steps from (24, 27) to (24, 28) and takes a small scan
+> START TURN 26
+> HINT 26: Treasure is somewhere in the boundary of regions 5 and 0.
+> ADD HINT 26 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent moves a large steps from (24, 28) to (20, 28)
+> Agent moves a large steps from (20, 28) to (20, 32)
+> START TURN 27
+> HINT 27: A small rectangle area doesn't has the treasure. Top-Left-Bottom-Right = [16, 10, 46, 58]
+> ADD HINT 27 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent moves a small steps from (20, 32) to (20, 33) and takes a small scan
+> Agent moves a small steps from (20, 33) to (19, 33) and takes a small scan
+> START TURN 28
+> HINT 28: Regions 1 do not contain the treasure
+> ADD HINT 28 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent moves a small steps from (19, 33) to (20, 33) and takes a small scan
+> Agent moves a small steps from (20, 33) to (21, 33) and takes a small scan
+> START TURN 29
+> HINT 29: The treasure is somewhere in the gap between 2 squares: S1 = [13, 0, 52, 53], S2 = [23, 4, 44, 43]
+> ADD HINT 29 TO HINT LIST
+> The pirate moves 2 steps to the west.
+> Agent moves a large steps from (21, 33) to (17, 33)
+> Agent moves a small steps from (17, 33) to (16, 33) and takes a small scan
 > WIN

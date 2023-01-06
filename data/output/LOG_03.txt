@@ -1,0 +1,92 @@
+90
+WIN
+> Game start
+> Agent appears at (69, 65)
+> The pirate's will be revealed at the beginning of turn 3
+> The pirate will be free at the beginning of turn 17
+> START TURN 1
+> HINT 1: One of the regions 3, 6, 5 has the treasure
+> ADD HINT 1 TO HINT LIST
+> HINT 1: is_verified = TRUE, is_truth = TRUE
+> Agent takes a large scan
+> Agent moves a small steps from [69, 65] to (67, 65) and takes a small scan
+> START TURN 2
+> HINT 2: A small rectangle area doesn't has the treasure. Top-Left-Bottom-Right = [2, 31, 51, 71]
+> ADD HINT 2 TO HINT LIST
+> Agent moves a small steps from (67, 65) to (65, 65) and takes a small scan
+> Agent moves a small steps from (65, 65) to (63, 65) and takes a small scan
+> START TURN 3
+> The Pirate is at the prison (28, 33)
+> HINT 3: A small rectangle area doesn't has the treasure. Top-Left-Bottom-Right = [43, 13, 66, 62]
+> ADD HINT 3 TO HINT LIST
+> Agent has verified the hint 3, it is True!!
+> HINT 3: is_verified = TRUE, is_truth = True
+> Agent takes a large scan
+> START TURN 4
+> HINT 4: The treasure is somewhere in a boundary of 2 regions
+> ADD HINT 4 TO HINT LIST
+> Agent has verified the hint 4, it is False!!
+> HINT 4: is_verified = TRUE, is_truth = False
+> Agent moves a small steps from (63, 65) to (61, 65) and takes a small scan
+> START TURN 5
+> HINT 5: Treasure is somewhere in the boundary of regions 3 and 2.
+> ADD HINT 5 TO HINT LIST
+> Agent has verified the hint 2, it is False!!
+> HINT 2: is_verified = TRUE, is_truth = False
+> Agent moves a large steps from (61, 65) to (57, 65)
+> START TURN 6
+> HINT 6: Regions 2 do not contain the treasure
+> ADD HINT 6 TO HINT LIST
+> Agent moves a large steps from (57, 65) to (53, 65)
+> Agent has verified the hint 6, it is True!!
+> HINT 6: is_verified = TRUE, is_truth = True
+> START TURN 7
+> HINT 7: One of the regions 1, 2, 5 has the treasure
+> ADD HINT 7 TO HINT LIST
+> Agent has verified the hint 7, it is False!!
+> HINT 7: is_verified = TRUE, is_truth = False
+> Agent moves a small steps from (53, 65) to (51, 65) and takes a small scan
+> START TURN 8
+> HINT 8: One of the regions 6, 3, 4, 1, 5 has the treasure
+> ADD HINT 8 TO HINT LIST
+> Agent has verified the hint 8, it is True!!
+> HINT 8: is_verified = TRUE, is_truth = True
+> Agent moves a small steps from (51, 65) to (49, 65) and takes a small scan
+> START TURN 9
+> HINT 9: A large rectangle area has the treasure. Top-Left-Bottom-Right = [21, 2, 64, 63]
+> ADD HINT 9 TO HINT LIST
+> Agent has verified the hint 9, it is True!!
+> HINT 9: is_verified = TRUE, is_truth = True
+> Agent moves a large steps from (49, 65) to (45, 65)
+> START TURN 10
+> HINT 10: Treasure is in the North-West of the pirate's position (28, 33)
+> ADD HINT 10 TO HINT LIST
+> Agent moves a small steps from (45, 65) to (45, 63) and takes a small scan
+> Agent moves a small steps from (45, 63) to (43, 63) and takes a small scan
+> START TURN 11
+> HINT 11: A large rectangle area has the treasure. Top-Left-Bottom-Right = [5, 1, 53, 70]
+> ADD HINT 11 TO HINT LIST
+> Agent moves a small steps from (43, 63) to (43, 61) and takes a small scan
+> Agent moves a small steps from (43, 61) to (41, 61) and takes a small scan
+> START TURN 12
+> HINT 12: The treasure is somewhere in an area bounded by 3 tiles from sea
+> ADD HINT 12 TO HINT LIST
+> Agent has verified the hint 11, it is True!!
+> HINT 11: is_verified = TRUE, is_truth = True
+> Agent moves a small steps from (41, 61) to (39, 61) and takes a small scan
+> START TURN 13
+> HINT 13: The treasure is somewhere in a boundary of 2 regions
+> ADD HINT 13 TO HINT LIST
+> Agent moves a small steps from (39, 61) to (37, 61) and takes a small scan
+> Agent moves a small steps from (37, 61) to (35, 61) and takes a small scan
+> START TURN 14
+> HINT 14: The treasure is somewhere in an area bounded by 3 tiles from sea
+> ADD HINT 14 TO HINT LIST
+> Agent moves a small steps from (35, 61) to (33, 61) and takes a small scan
+> Agent moves a large steps from (33, 61) to (29, 61)
+> START TURN 15
+> HINT 15: The treasure is somewhere in the gap between 2 squares: S1 = [4, 9, 58, 68], S2 = [18, 19, 56, 49]
+> ADD HINT 15 TO HINT LIST
+> Agent moves a small steps from (29, 61) to (27, 61) and takes a small scan
+> Agent moves a small steps from (27, 61) to (25, 61) and takes a small scan
+> WIN

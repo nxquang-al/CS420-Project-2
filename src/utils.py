@@ -50,4 +50,42 @@ def write_logs_file(output_dir='data/output/', file_name='LOG_01.txt', logs=[]):
         f.write('\n')
         f.write('> ' + log)
 
-    f.close
+    f.close()
+
+
+def write_map_file(dir='data/input/', file_name='MAP_01.txt', data=None):
+    width, height, map, mountains, prisons, num_regions, treasure_pos, reveal_turn, free_turn = data
+    print(width, height, map, mountains, prisons,
+          num_regions, treasure_pos, reveal_turn, free_turn)
+    map = map.T
+    str_map = []
+    for _ in range(height):
+        str_map.append([])
+    for i in range(height):
+        for j in range(width):
+            str_map[i].append(str(map[i, j]))
+    print(str_map)
+    for mountain in mountains:
+        (col, row) = mountain
+        str_map[row][col] += 'M'
+    for prison in prisons:
+        (col, row) = prison
+        str_map[row][col] += 'P'
+
+    f = open(dir+file_name, 'w')
+    f.write(f'{width} {height}')
+    f.write('\n')
+    f.write(str(reveal_turn))
+    f.write('\n')
+    f.write(str(free_turn))
+    f.write('\n')
+    f.write(str(num_regions))
+    f.write('\n')
+    f.write(f'{treasure_pos[0]} {treasure_pos[1]}')
+    f.write('\n')
+    for i in range(height):
+        line = '; '.join(str_map[i])
+        f.write(line.strip())
+        if i < height - 1:
+            f.write('\n')
+    f.close()
