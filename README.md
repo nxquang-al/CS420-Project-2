@@ -14,7 +14,7 @@ $ pip install -r requirements.txt
 ## 3. RUN
 We provides 2 modes to run the game: read map from text file or automatically generate a new map
 ### Read input from text file
-To run the game with provided map, you have to turn on the flag -r, --read
+To run the game with provided map, you have to turn on the flag `-r, --read`
 Argument:
  * `file_path`: Path to the input file \
 
@@ -24,7 +24,7 @@ Here is a sample command:
 $ python src/visualization.py -r data/input/MAP_01.txt
 ```
 ### Generate a new map with map shape
-In this case, the flag -g, --generate must be turned on \
+In this case, the flag `-g, --generate` must be turned on \
 Argument
  * `width, height`: The expected width and height of the map \
  
