@@ -35,3 +35,6 @@ Sample command:
 ```bash
 $ python src/visualization.py -g 64 64
 ```
+## 4. VISUALIZATION
+![CS418_demo_img1](https://user-images.githubusercontent.com/79528257/211090130-ea4785c9-22c4-461a-97bc-b0f77059fe8e.png)
+![CS418_demo_img2](https://user-images.githubusercontent.com/79528257/211090225-271e5280-2eeb-4ede-95ee-ff4f72cab0a9.png)
