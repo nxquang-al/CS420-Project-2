@@ -17,7 +17,9 @@ We provides 2 modes to run the game: read map from text file or automatically ge
 To run the game with provided map, you have to turn on the flag -r, --read
 Argument:
  * `file_path`: Path to the input file \
-Here is a sample command
+
+Here is a sample command:
+
 ```bash
 $ python src/visualization.py -r data/input/MAP_01.txt
 ```
@@ -25,7 +27,9 @@ $ python src/visualization.py -r data/input/MAP_01.txt
 In this case, the flag -g, --generate must be turned on \
 Argument
  * `width, height`: The expected width and height of the map \
+ 
 Sample command:
+
 ```bash
 $ python src/visualization.py -g 64 64
 ```
