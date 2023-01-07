@@ -199,6 +199,8 @@ class Game:
                         self.is_win = True
 
                     # Else, agent move the next step to the treasure
+                    if len(self.agent.path) == 0:
+                        continue
                     next_pos = self.agent.path.pop(0)
                     if cal_manhattan_distance(self.agent.cur_pos, next_pos) <= 2:
                         # Small move

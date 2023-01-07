@@ -46,8 +46,8 @@ class Map:
         for (x, y) in tiles:
             if x > 0 and y > 0 and x < self.width - 1 and y < self.width - 1:
                 if np.any(self.map[x-1:x+2, y-1:y+2] == 0):     # if the tile is near-sea
-                    if self.is_movable((x, y)):
-                        beach_tiles.append((x, y))
+                    if self.is_movable((y, x)):
+                        beach_tiles.append((y, x))
         if beach_tiles:
             return random.choice(beach_tiles)
         else:
@@ -55,8 +55,8 @@ class Map:
             while not is_legal:
                 x = random.randint(0, self.width)
                 y = random.randint(0, self.height)
-                is_legal = self.is_movable((x, y))
-            return (x, y)
+                is_legal = self.is_movable((y, x))
+            return (y, x)
 
     def wrap_map_data(self):
         return [self.width, self.height, self.map, self.mountains, self.prisons, self.num_regions+1, self.treasure_pos]
@@ -425,7 +425,7 @@ class Map:
             binary_mask = np.logical_or(binary_mask, mask)
 
         sea = np.where(self.map == 0, False, True)
-        binary_mask = np.logical_and(binary_mask, sea)
+        binary_mask = np.logical_and(binary_mask, sea)      
 
         x, y = np.where(binary_mask == 1)
         tiles = np.vstack((x, y)).T

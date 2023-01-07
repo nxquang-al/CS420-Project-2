@@ -336,9 +336,9 @@ class MapDisplay(tk.CTkFrame):
     def display(self):
         for i in range(self.cols):
             for j in range(self.rows):
-                cell_color = colors.get(map.get_region(i, j), default)
+                cell_color = colors.get(map.get_region(j, i), default)
                 cell_type = map.tile_type(i, j)
-
+                
                 # Numbers for Ox coordinate
                 if j == 0:
                     self.xcoor.create_text((i+0.5)*self.cell_width,

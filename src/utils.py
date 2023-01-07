@@ -55,8 +55,8 @@ def write_logs_file(output_dir='data/output/', file_name='LOG_01.txt', logs=[]):
 
 def write_map_file(dir='data/input/', file_name='MAP_01.txt', data=None):
     width, height, map, mountains, prisons, num_regions, treasure_pos, reveal_turn, free_turn = data
-    print(width, height, map, mountains, prisons,
-          num_regions, treasure_pos, reveal_turn, free_turn)
+    # print(width, height, map, mountains, prisons,
+    #       num_regions, treasure_pos, reveal_turn, free_turn)
     map = map.T
     str_map = []
     for _ in range(height):

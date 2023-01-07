@@ -12,6 +12,12 @@ $ conda activate treasure-island
 $ pip install -r requirements.txt
 ```
 ## 3. RUN
+DO THE 
+``` bash
+$ pip install -r requirements.txt
+```
+WHILE NOT USING CONDA ENVIRONMENT AND RUN THE GAME WITHOUT IT (CONDA ENV) FOR THE BEST UI AND FONTS.
+
 We provides 2 modes to run the game: read map from text file or automatically generate a new map.
 ### Read input from text file
 To run the game with provided map, you have to turn on the flag `-r, --read`.
